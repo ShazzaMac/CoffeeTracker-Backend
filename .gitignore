@@ -1,2 +1,19 @@
-node_modules
-_pycache_
+# Ignore the Python bytecode cache folder
+__pycache__/
+
+# Ignore Django migration files
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Django's SQLite database file
+db.sqlite3
+
+# Ignore media folder (uploads from users)
+/media/
+
+# Ignore static files if they are not managed by Django's collectstatic command
+/static/
+
+# Ignore virtual environment
+venv/

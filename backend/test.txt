@@ -1,0 +1,31 @@
+my-webapp/                  # Root project folder
+├── backend/                 # Django backend directory
+│   ├── manage.py            # Django management script
+│   ├── db.sqlite3           # SQLite database (if used)
+│   ├── requirements.txt     # Project dependencies (pip freeze)
+│   ├── mywebapp/            # Your main Django app folder
+│   │   ├── __init__.py
+│   │   ├── settings.py      # Project settings
+│   │   ├── urls.py          # Project URL routing
+│   │   ├── wsgi.py          # WSGI application
+│   │   ├── asgi.py          # ASGI application (if using async)
+│   │   ├── admin.py         # Admin configurations
+│   │   ├── apps.py          # App configuration
+│   │   ├── models.py        # Database models
+│   │   ├── views.py         # Views (controllers in Django)
+│   │   ├── tests.py         # Tests for your app
+│   │   ├── migrations/      # Database migrations folder
+│   │   │   └── __init__.py
+│   ├── registration/        # The Django Registration app folder (if you use it)
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── urls.py          # URL routing for registration
+│   │   ├── migrations/      # Migrations for this app
+│   ├── static/              # Static files (CSS, JS, images)
+│   ├── media/               # Media files (user-uploaded files)
+├── frontend/                # Frontend directory (if you separate this from the backend)
+│   └── ...                  # Your frontend files
+└── .gitignore               # Git ignore file

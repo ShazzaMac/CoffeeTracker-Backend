@@ -10,131 +10,126 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
+from pathlib import Path  # Importing Path class from pathlib module
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent  # Define the base directory of the project
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yh_k+-$rq=b$#096nu(4p%ycdkwh8zpv_y6*peca_+b7y23fj+'
+SECRET_KEY = 'django-insecure-yh_k+-$rq=b$#096nu(4p%ycdkwh8zpv_y6*peca_+b7y23fj+'  # Secret key for cryptographic signing
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # Enable debug mode (should be False in production)
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = []  # List of strings representing the host/domain names that this Django site can serve
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',  # Django REST Framework
-    'corsheaders',     # CORS headers for React integration
-    'shops',           # Your custom app
+    # Default apps
+    'django.contrib.admin',  # Admin site
+    'django.contrib.auth',  # Authentication framework
+    'django.contrib.contenttypes',  # Content types framework
+    'django.contrib.sessions',  # Session framework
+    'django.contrib.messages',  # Messaging framework
+    'django.contrib.staticfiles',  # Static files handling
+    'corsheaders',  # Add 'corsheaders' to INSTALLED_APPS for handling CORS
+    # Custom apps
+    'registration',  # Add 'registration' to INSTALLED_APPS for user registration
+    # other apps...
+    'rest_framework',  # Django REST framework
+    'rest_framework.authtoken',  # Token authentication for REST framework
 ]
-
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Enable CORS
+    'django.middleware.security.SecurityMiddleware',  # Security middleware
+    'django.contrib.sessions.middleware.SessionMiddleware',  # Session middleware
+    'django.middleware.common.CommonMiddleware',  # Common middleware
+    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection middleware
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # Authentication middleware
+    'django.contrib.messages.middleware.MessageMiddleware',  # Messaging middleware
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection middleware
+    'corsheaders.middleware.CorsMiddleware',  # Enable CORS middleware
 ]
-# Allow all origins for development
-CORS_ALLOW_ALL_ORIGINS = True
 
-ROOT_URLCONF = 'backend.urls'
+# Allow all origins for development
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (should be configured properly in production)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Add the React app URL for CORS
+]
+
+ROOT_URLCONF = 'mycoffeeapp.urls'  # Root URL configuration
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # Template backend
+        'DIRS': [],  # Directories to search for templates
+        'APP_DIRS': True,  # Enable template loading from app directories
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.debug',  # Debug context processor
+                'django.template.context_processors.request',  # Request context processor
+                'django.contrib.auth.context_processors.auth',  # Auth context processor
+                'django.contrib.messages.context_processors.messages',  # Messages context processor
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = 'mycoffeeapp.wsgi.application'  # WSGI application
 
-
-# Database
+# Database configuration
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'coffee_tracker_db',   # The name of the database i created
-        'USER': 'my_user',             # The username you created
-        'PASSWORD': 'new_password',     # The password for this user
-        'HOST': 'localhost',           # The host, 'localhost' if running on the same machine
-        'PORT': '5432',                # The default PostgreSQL port
+        'ENGINE': 'django.db.backends.postgresql',  # Database engine
+        'NAME': 'CoffeeApp',  # The name of the database
+        'USER': 'postgres',  # The username for the database
+        'PASSWORD': 'Plu13064005!',  # The password for the database user
+        'HOST': 'localhost',  # The host of the database
+        'PORT': '5433',  # The port of the database
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',  # Validate similarity to user attributes
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',  # Validate minimum length
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # Validate common passwords
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # Validate numeric passwords
     },
 ]
 
-
-# Internationalization
+# Internationalization - where to find translations
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'  # Language code
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC'  # Time zone
 
-USE_I18N = True
+USE_I18N = True  # Enable internationalization
 
-USE_TZ = True
-
+USE_TZ = True  # Enable timezone support
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/'  # URL to use when referring to static files
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-    
-
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # Default primary key field type
