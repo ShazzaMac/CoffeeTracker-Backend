@@ -53,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',  # Messaging middleware
     'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection middleware
     'corsheaders.middleware.CorsMiddleware',  # Enable CORS middleware
+    'django_ratelimit.middleware.RatelimitMiddleware', # Rate limiting middleware
+
 ]
 
 # Allow all origins for development
@@ -133,3 +135,61 @@ STATIC_URL = 'static/'  # URL to use when referring to static files
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # Default primary key field type
+
+# Django REST framework settings that are built into Django
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'registration': {  # Adjust to your app's name if different
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        # Optionally, add other loggers
+    },
+}
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'coffeetrackerapphelp@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'wttq iolz lwik gojr'  # Replace with your App Password (not your Gmail password)
+DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
+
+#check this has been set up right -- sharon 06.01.2025
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        },
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+RATELIMIT_VIEW = 'django_ratelimit.views.ratelimited'
+
