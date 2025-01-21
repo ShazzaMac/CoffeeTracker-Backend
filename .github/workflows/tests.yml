@@ -10,6 +10,7 @@ on:
 
 jobs:
   # Job to test the backend (Django)
+
   test:
     name: Run Django Tests  # Descriptive name for the job.
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
@@ -30,10 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run backend tests  # Run Django tests using the `manage.py test` command.
-        run: |
-          python manage.py test
-
+      - name: Change directory to project root
+        run: cd /home/runner/work/CoffeeTracker-Backend/backend
+       
+      - name: Run tests
+        run: python manage.py test
+        
   # Job to run coverage for backend tests
   coverage:
     name: Run Coverage and Upload to Codecov  # Descriptive name for the coverage job.
