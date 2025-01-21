@@ -13,8 +13,19 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
+from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+from django.views import View
+from .models import CoffeeShop
+
+class DashboardView(View):
+    def get(self, request):
+        return JsonResponse({"message": "Welcome to the dashboard!"})
+
+
 
 import logging
+
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -40,24 +51,22 @@ class UserRegistrationView(APIView):
 # This view is used to log in the user
 class LoginView(APIView):
     def post(self, request):
-        logger.info(f"Received login data: {request.data}")
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
             user = authenticate(username=username, password=password)
             if user:
+                # Create or get a token for the user
                 token, created = Token.objects.get_or_create(user=user)
-                logger.info("User authenticated successfully")
                 return Response({
                     "message": "Login successful",
-                    "token": token.key
+                    "token": token.key  # Return the token to the client
                 }, status=status.HTTP_200_OK)
             else:
-                logger.error("Authentication failed: Invalid credentials")
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        logger.error(f"Login errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # This view is used to send a password reset link to the user's email
 @method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True), name='dispatch')
@@ -108,3 +117,28 @@ from django.http import JsonResponse
 
 def custom_ratelimited(request, exception=None):
     return JsonResponse({'error': 'Rate limit exceeded. Try again later.'}, status=429)
+
+class ProtectedEndpoint(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "You have access!"})
+
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "Welcome to your dashboard!"})
+
+class CoffeeStatsAPIView(APIView):
+    def get(self, request):
+        total_shops = CoffeeShop.objects.count()
+        avg_price = CoffeeShop.objects.aggregate(Avg('price'))['price__avg']
+        most_popular_coffee = CoffeeShop.objects.values('coffee_type').annotate(count=Count('coffee_type')).order_by('-count')[0]['coffee_type']
+
+        data = {
+            'total_shops': total_shops,
+            'avg_price': avg_price,
+            'most_popular_coffee': most_popular_coffee,
+        }
+        return Response(data)

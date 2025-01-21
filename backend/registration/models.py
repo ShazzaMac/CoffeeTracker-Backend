@@ -21,3 +21,13 @@ class CustomUser(AbstractUser):
     )
 
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']  # Fields you want to require at creation
+
+class CoffeeShop(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    average_price = models.DecimalField(max_digits=5, decimal_places=2)
+    rating = models.FloatField()
+    most_popular_coffee = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name

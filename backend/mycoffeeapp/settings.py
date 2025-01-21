@@ -61,6 +61,7 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (should be configured properly in production)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add the React app URL for CORS
+
 ]
 
 ROOT_URLCONF = 'mycoffeeapp.urls'  # Root URL configuration
@@ -137,16 +138,14 @@ STATIC_URL = 'static/'  # URL to use when referring to static files
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # Default primary key field type
 
 # Django REST framework settings that are built into Django
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
+
 
 LOGGING = {
     'version': 1,
@@ -157,13 +156,18 @@ LOGGING = {
         },
     },
     'loggers': {
-        'registration': {  # Adjust to your app's name if different
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'registration': {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        # Optionally, add other loggers
     },
 }
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
