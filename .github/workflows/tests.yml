@@ -1,0 +1,130 @@
+name: Backend and Frontend CI  # The name of the workflow as it appears in the GitHub Actions UI.
+
+on:
+  push:  # Trigger the workflow on pushes to the specified branches.
+    branches:
+      - main  # Specify the branch to monitor.
+  pull_request:  # Trigger the workflow when a pull request is opened or updated.
+    branches:
+      - main  # Specify the branch for pull requests.
+
+jobs:
+  # Job to test the backend (Django)
+  test:
+    name: Run Django Tests  # Descriptive name for the job.
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    steps:
+      - name: Checkout code  # Step to clone the repository into the runner.
+        uses: actions/checkout@v3
+
+      - name: Set up Python  # Set up the Python environment.
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9  # Specify the Python version.
+
+      - name: Install dependencies  # Install the backend dependencies from requirements.txt.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run backend tests  # Run Django tests using the `manage.py test` command.
+        run: |
+          python manage.py test
+
+  # Job to run coverage for backend tests
+  coverage:
+    name: Run Coverage and Upload to Codecov  # Descriptive name for the coverage job.
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    steps:
+      - name: Checkout code  # Step to clone the repository into the runner.
+        uses: actions/checkout@v3
+
+      - name: Set up Python  # Set up the Python environment.
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9  # Specify the Python version.
+
+      - name: Install dependencies  # Install the backend dependencies from requirements.txt.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage  # Run tests and collect coverage data.
+        run: |
+          coverage run --source='.' manage.py test
+
+      - name: Generate and upload coverage report  # Upload coverage data to Codecov.
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  # Secure token for Codecov (stored in repository secrets).
+          file: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+
+  # Job to lint backend code with flake8
+  lint:
+    name: Lint Backend Code  # Descriptive name for the linting job.
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    steps:
+      - name: Checkout code  # Step to clone the repository into the runner.
+        uses: actions/checkout@v3
+
+      - name: Set up Python  # Set up the Python environment.
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9  # Specify the Python version.
+
+      - name: Install dependencies  # Install flake8 for linting.
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Run flake8  # Run flake8 to check for style and syntax issues.
+        run: |
+          flake8
+
+  # Job to type-check backend code with mypy
+  type-check:
+    name: Type Check Backend Code  # Descriptive name for the type-checking job.
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    steps:
+      - name: Checkout code  # Step to clone the repository into the runner.
+        uses: actions/checkout@v3
+
+      - name: Set up Python  # Set up the Python environment.
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9  # Specify the Python version.
+
+      - name: Install dependencies  # Install mypy for type checking.
+        run: |
+          python -m pip install --upgrade pip
+          pip install mypy
+
+      - name: Run mypy  # Run mypy to check for type errors.
+        run: |
+          mypy .
+
+  # Job to test the frontend (React)
+  frontend-tests:
+    name: Run Frontend Tests  # Descriptive name for the frontend testing job.
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    steps:
+      - name: Checkout code  # Step to clone the repository into the runner.
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js  # Set up the Node.js environment.
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # Specify the Node.js version.
+
+      - name: Install frontend dependencies  # Install the React project dependencies.
+        run: |
+          cd frontend  # Navigate to the frontend directory.
+          npm install
+
+      - name: Run frontend tests  # Run the React frontend tests.
+        run: |
+          cd frontend  # Navigate to the frontend directory.
+          npm test -- --watchAll=false  # Run tests in non-interactive mode.
