@@ -32,7 +32,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Change directory to project root
-        run: cd /home/runner/work/CoffeeTracker-Backend/backend
+        run: cd backend
        
       - name: Run tests
         run: python manage.py test
