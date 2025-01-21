@@ -20,7 +20,10 @@ jobs:
       - name: Set up Python  # Set up the Python environment.
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9  # Specify the Python version.
+          python-version: 3.12  # Specify the Python version.
+
+      - name: Check Python version  # Check the Python version.
+        run: python --version
 
       - name: Install dependencies  # Install the backend dependencies from requirements.txt.
         run: |
