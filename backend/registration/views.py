@@ -2,33 +2,27 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
-from rest_framework.authtoken.models import Token
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
-from rest_framework.permissions import AllowAny
 from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
-from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.views import View
+from django.db.models import Avg, Count
+from .serializers import UserRegistrationSerializer, UserLoginSerializer
 from .models import CoffeeShop
-
-class DashboardView(View):
-    def get(self, request):
-        return JsonResponse({"message": "Welcome to the dashboard!"})
-
-
-
 import logging
-
 
 # Initialize logger
 logger = logging.getLogger(__name__)
+
 
 # This view is used to register a new user
 class UserRegistrationView(APIView):
@@ -126,6 +120,9 @@ class ProtectedEndpoint(APIView):
 
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
+class DashboardView(View):
+    def get(self, request):
+        return JsonResponse({"message": "Welcome to the dashboard!"})
 
     def get(self, request):
         return Response({"message": "Welcome to your dashboard!"})
@@ -133,12 +130,20 @@ class DashboardView(APIView):
 class CoffeeStatsAPIView(APIView):
     def get(self, request):
         total_shops = CoffeeShop.objects.count()
+        if total_shops == 0:
+            return Response({'message': 'No coffee shop data available.'}, status=status.HTTP_200_OK)
+
         avg_price = CoffeeShop.objects.aggregate(Avg('price'))['price__avg']
-        most_popular_coffee = CoffeeShop.objects.values('coffee_type').annotate(count=Count('coffee_type')).order_by('-count')[0]['coffee_type']
+        most_popular = (
+            CoffeeShop.objects.values('coffee_type')
+            .annotate(count=Count('coffee_type'))
+            .order_by('-count').first()
+        )
+        most_popular_coffee = most_popular['coffee_type'] if most_popular else None
 
         data = {
             'total_shops': total_shops,
             'avg_price': avg_price,
             'most_popular_coffee': most_popular_coffee,
         }
-        return Response(data)
+        return Response(data, status=status.HTTP_200_OK)

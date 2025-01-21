@@ -10,6 +10,7 @@ from registration.serializers import UserRegistrationSerializer, UserLoginSerial
 User = get_user_model()  # Use get_user_model for custom user models
 
 
+# class to test the user registration
 class UserRegistrationTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -39,7 +40,7 @@ class UserRegistrationTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('token', response.data)  # Check if token exists
 
-
+#class to test the user registration serializer
 class UserRegistrationSerializerTestCase(TestCase):
     def setUp(self):
         self.user = {
@@ -57,7 +58,7 @@ class UserRegistrationSerializerTestCase(TestCase):
         self.assertEqual(user.email, self.user['email'])
         self.assertTrue(user.check_password(self.user['password']))
 
-
+#create a class to test the user login serializer
 class UserLoginSerializerTestCase(TestCase):
     def setUp(self):
         # Create a test user
@@ -72,7 +73,7 @@ class UserLoginSerializerTestCase(TestCase):
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data['username'], data['username'])
 
-
+#class to test the user registration view
 class UserRegistrationViewTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
