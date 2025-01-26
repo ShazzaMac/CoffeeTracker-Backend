@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Custom apps
     'registration',  # Add 'registration' to INSTALLED_APPS for user registration
     # other apps...
+    'fhrs',  # Add 'fhrs' to INSTALLED_APPS for the FHRS app
     'rest_framework',  # Django REST framework
     'rest_framework.authtoken',  # Token authentication for REST framework
 ]
