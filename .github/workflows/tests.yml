@@ -1,136 +1,129 @@
-name: Backend and Frontend CI  # The name of the workflow as it appears in the GitHub Actions UI.
+name: Backend and Frontend CI  # Workflow name shown in GitHub Actions UI
 
 on:
-  push:  # Trigger the workflow on pushes to the specified branches.
+  push:
     branches:
-      - main  # Specify the branch to monitor.
-  pull_request:  # Trigger the workflow when a pull request is opened or updated.
+      - main  # Trigger on push to main branch
+  pull_request:
     branches:
-      - main  # Specify the branch for pull requests.
+      - main  # Trigger on pull request to main branch
 
 jobs:
-  # Job to test the backend (Django)
-
+  # Job to test the Django backend
   test:
-    name: Run Django Tests  # Descriptive name for the job.
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    name: Run Django Tests
+    runs-on: ubuntu-latest  # Use latest Ubuntu runner
     steps:
-      - name: Checkout code  # Step to clone the repository into the runner.
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3  # Clone the repository
 
-      - name: Set up Python  # Set up the Python environment.
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12  # Specify the Python version.
+          python-version: 3.12  # Specify Python version
 
-      - name: Check Python version  # Check the Python version.
-        run: python --version
-
-      - name: Install dependencies  # Install the backend dependencies from requirements.txt.
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python3 -m pip install --upgrade pip
+          pip install -r backend/requirements.txt  # Install backend dependencies
 
-      - name: Change directory to project root
-        run: cd backend
-       
       - name: Run tests
-        run: python manage.py test
-        
-  # Job to run coverage for backend tests
+        run: python3 backend/manage.py test  # Run Django tests
+
+  # Job to measure test coverage and upload results
   coverage:
-    name: Run Coverage and Upload to Codecov  # Descriptive name for the coverage job.
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    name: Run Coverage and Upload to Codecov
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code  # Step to clone the repository into the runner.
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python  # Set up the Python environment.
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12  # Specify the Python version.
+          python-version: 3.12
 
-      - name: Install dependencies  # Install the backend dependencies from requirements.txt.
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python3 -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
 
-      - name: Run tests with coverage  # Run tests and collect coverage data.
+      - name: Run tests with coverage
         run: |
-          coverage run --source='.' manage.py test
+          coverage run --source=backend backend/manage.py test  # Run tests and collect coverage
 
-      - name: Generate and upload coverage report  # Upload coverage data to Codecov.
+      - name: Generate coverage report
+        run: coverage xml  # Generate XML report for Codecov
+
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}  # Secure token for Codecov (stored in repository secrets).
+          token: ${{ secrets.CODECOV_TOKEN }}  # Codecov token from repository secrets
           file: coverage.xml
           flags: unittests
           name: codecov-umbrella
-          fail_ci_if_error: true
+          fail_ci_if_error: true  # Fail CI if upload fails
 
-  # Job to lint backend code with flake8
+  # Job to lint backend code using flake8
   lint:
-    name: Lint Backend Code  # Descriptive name for the linting job.
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    name: Lint Backend Code
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code  # Step to clone the repository into the runner.
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python  # Set up the Python environment.
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12  # Specify the Python version.
+          python-version: 3.12
 
-      - name: Install dependencies  # Install flake8 for linting.
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install flake8
+          python3 -m pip install --upgrade pip
+          pip install flake8  # Install flake8 for linting
 
-      - name: Run flake8  # Run flake8 to check for style and syntax issues.
-        run: |
-          flake8
+      - name: Run flake8
+        run: flake8 backend  # Lint the backend directory
 
   # Job to type-check backend code with mypy
   type-check:
-    name: Type Check Backend Code  # Descriptive name for the type-checking job.
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    name: Type Check Backend Code
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code  # Step to clone the repository into the runner.
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python  # Set up the Python environment.
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12  # Specify the Python version.
+          python-version: 3.12
 
-      - name: Install dependencies  # Install mypy for type checking.
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install mypy
+          python3 -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install mypy django-stubs  # Install mypy and Django type stubs
 
-      - name: Run mypy  # Run mypy to check for type errors.
-        run: |
-          mypy .
+      - name: Run mypy
+        run: mypy backend  # Type-check backend code
 
-  # Job to test the frontend (React)
+  # Job to test the React frontend
   frontend-tests:
-    name: Run Frontend Tests  # Descriptive name for the frontend testing job.
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner.
+    name: Run Frontend Tests
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code  # Step to clone the repository into the runner.
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js  # Set up the Node.js environment.
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18  # Specify the Node.js version.
+          node-version: 18  # Specify Node.js version
 
-      - name: Install frontend dependencies  # Install the React project dependencies.
-        run: |
-          cd frontend  # Navigate to the frontend directory.
-          npm install
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install  # Install dependencies
 
-      - name: Run frontend tests  # Run the React frontend tests.
-        run: |
-          cd frontend  # Navigate to the frontend directory.
-          npm test -- --watchAll=false  # Run tests in non-interactive mode.
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --watchAll=false  # Run frontend tests without watch mode

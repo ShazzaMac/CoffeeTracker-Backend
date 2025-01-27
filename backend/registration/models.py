@@ -1,5 +1,6 @@
 # Django imports - this is the default Django User model and the AbstractUser class that we will inherit from.
 # registration/models.py
+# models are used to define the structure of the database so each model is a table in the database
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
