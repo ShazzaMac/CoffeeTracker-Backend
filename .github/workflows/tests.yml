@@ -1,4 +1,4 @@
-name: Backend and Frontend CI
+name: Backend and Frontend CI/CD
 
 on:
   push:
@@ -9,41 +9,124 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          POSTGRES_USER: my_user
-          POSTGRES_PASSWORD: Plu13064005!
-          POSTGRES_DB: coffee_tracker_db
-
+  # Job to test the Django backend
+  test-django-app:
+    name: Run Django Tests
+    runs-on: ubuntu-latest 
+    strategy:
+      matrix:
+        python-version: [3.12.6]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.12
+          python-version: 3.12.6
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python3 -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
 
       - name: Run tests
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        run: python3 backend/manage.py test
+
+  # Job to measure test coverage and upload results
+  coverage:
+    name: Run Coverage and Upload to Codecov
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.6
+
+      - name: Install dependencies
         run: |
-          python manage.py migrate
-          python manage.py test
+          python3 -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          coverage run --source=backend backend/manage.py test
+
+      - name: Generate coverage report
+        run: coverage xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+
+  # Job to lint backend code using flake8
+  lint:
+    name: Lint Backend Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.6
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Run flake8
+        run: flake8 backend
+
+  # Job to type-check backend code with mypy
+  type-check:
+    name: Type Check Backend Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12.6
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install mypy django-stubs
+
+      - name: Run mypy
+        run: mypy backend
+
+  # Job to test the React frontend
+  frontend-tests:
+    name: Run Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --watchAll=false
