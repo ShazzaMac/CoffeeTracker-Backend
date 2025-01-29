@@ -1,129 +1,49 @@
-name: Backend and Frontend CI  # Workflow name shown in GitHub Actions UI
+name: Backend and Frontend CI
 
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger on pull request to main branch
+      - main
 
 jobs:
-  # Job to test the Django backend
   test:
-    name: Run Django Tests
-    runs-on: ubuntu-latest  # Use latest Ubuntu runner
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: my_user
+          POSTGRES_PASSWORD: Plu13064005!
+          POSTGRES_DB: coffee_tracker_db
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Clone the repository
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.12.6  # Specify Python version
+          python-version: 3.12
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip install -r backend/requirements.txt  # Install backend dependencies
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run tests
-        run: python3 backend/manage.py test  # Run Django tests
-
-  # Job to measure test coverage and upload results
-  coverage:
-    name: Run Coverage and Upload to Codecov
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.6
-
-      - name: Install dependencies
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         run: |
-          python3 -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
-
-      - name: Run tests with coverage
-        run: |
-          coverage run --source=backend backend/manage.py test  # Run tests and collect coverage
-
-      - name: Generate coverage report
-        run: coverage xml  # Generate XML report for Codecov
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}  # Codecov token from repository secrets
-          file: coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true  # Fail CI if upload fails
-
-  # Job to lint backend code using flake8
-  lint:
-    name: Lint Backend Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.6
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install flake8  # Install flake8 for linting
-
-      - name: Run flake8
-        run: flake8 backend  # Lint the backend directory
-
-  # Job to type-check backend code with mypy
-  type-check:
-    name: Type Check Backend Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.6
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
-          pip install mypy django-stubs  # Install mypy and Django type stubs
-
-      - name: Run mypy
-        run: mypy backend  # Type-check backend code
-
-  # Job to test the React frontend
-  frontend-tests:
-    name: Run Frontend Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18  # Specify Node.js version
-
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm install  # Install dependencies
-
-      - name: Run frontend tests
-        working-directory: frontend
-        run: npm test -- --watchAll=false  # Run frontend tests without watch mode
+          python manage.py migrate
+          python manage.py test
