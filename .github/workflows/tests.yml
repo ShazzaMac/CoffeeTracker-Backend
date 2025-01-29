@@ -16,6 +16,20 @@ jobs:
     strategy:
       matrix:
         python-version: [3.12.6]
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: my_user
+          POSTGRES_PASSWORD: Plu13064005!
+          POSTGRES_DB: coffee_tracker_db
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,6 +45,8 @@ jobs:
           pip install -r backend/requirements.txt
 
       - name: Run tests
+        env:
+          DATABASE_URL: postgres://postmy_usergres:Plu13064005!@localhost:5432/coffee_tracker_db  # Correct database URL for the PostgreSQL service
         run: python3 backend/manage.py test
 
   # Job to measure test coverage and upload results
