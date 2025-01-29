@@ -1,5 +1,5 @@
 asgiref==3.8.1
-Django==5.1.4
+Django
 django-cors-headers==4.6.0
 django-ratelimit==4.1.0
 django-registration==5.1.0
