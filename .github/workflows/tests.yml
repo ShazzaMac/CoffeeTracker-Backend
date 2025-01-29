@@ -20,7 +20,7 @@ jobs:
       postgres:
         image: postgres:13
         ports:
-          - 5432:5432
+          - 5433:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -52,7 +52,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://my_user:Plu13064005!@localhost:5432/coffee_tracker_db  # Correct database URL for the PostgreSQL service
+          DATABASE_URL: postgres://my_user:Plu13064005!@localhost:5433/coffee_tracker_db  # Correct database URL for the PostgreSQL service
         run: python3 backend/manage.py test
 
   # Job to measure test coverage and upload results
