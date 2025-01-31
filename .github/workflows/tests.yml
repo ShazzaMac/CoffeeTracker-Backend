@@ -20,14 +20,14 @@ jobs:
       postgres:
         image: postgres:13
         ports:
-          - 5433:5432
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         env:
-          POSTGRES_USER: my_user
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: Plu13064005!
           POSTGRES_DB: coffee_tracker_db
     steps:
@@ -52,7 +52,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://my_user:Plu13064005!@localhost:5433/coffee_tracker_db
+          DATABASE_URL: postgres://postgres:Plu13064005!@localhost:5432/coffee_tracker_db
         run: python3 backend/manage.py test
 
   # Job to measure test coverage and upload results
