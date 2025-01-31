@@ -8,44 +8,9 @@ on:
     branches:
       - main
 
-      
 jobs:
   # Job to test the Django backend
-
   test-django-app:
-    name: Run Django Tests
-    runs-on: ubuntu-latest 
-    strategy:
-      matrix:
-        python-version: [3.12.6]
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5433:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: Plu13064005!
-          POSTGRES_DB: coffee_tracker_db
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Create PostgreSQL user
-        run: |
-          docker exec -i ${{ job.services.postgres.id }} psql -U postgres -c "CREATE USER postgres WITH PASSWORD 'your_password';"
-          docker exec -i ${{ job.services.postgres.id }} psql -U postgres -c "ALTER USER postgres WITH SUPERUSER;"
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..30}; do
-            nc -zv localhost 5432 && break || sleep 1
-          done
     name: Run Django Tests
     runs-on: ubuntu-latest 
     strategy:
@@ -72,7 +37,7 @@ jobs:
       - name: Wait for PostgreSQL to be ready
         run: |
           for i in {1..30}; do
-            nc -zv localhost 5432 && break || sleep 1
+            nc -zv localhost 5433 && break || sleep 1
           done
 
       - name: Set up Python
@@ -87,7 +52,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://my_user:Plu13064005!@localhost:5433/coffee_tracker_db  # Correct database URL for the PostgreSQL service
+          DATABASE_URL: postgres://my_user:Plu13064005!@localhost:5433/coffee_tracker_db
         run: python3 backend/manage.py test
 
   # Job to measure test coverage and upload results
