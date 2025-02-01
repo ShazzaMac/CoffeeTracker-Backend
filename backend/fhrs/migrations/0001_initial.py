@@ -7,21 +7,28 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Business',
+            name="Business",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('fhrs_id', models.IntegerField(unique=True)),
-                ('name', models.CharField(max_length=255)),
-                ('address', models.TextField()),
-                ('rating', models.CharField(blank=True, max_length=10, null=True)),
-                ('latitude', models.FloatField(blank=True, null=True)),
-                ('longitude', models.FloatField(blank=True, null=True)),
-                ('business_type', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("fhrs_id", models.IntegerField(unique=True)),
+                ("name", models.CharField(max_length=255)),
+                ("address", models.TextField()),
+                ("rating", models.CharField(blank=True, max_length=10, null=True)),
+                ("latitude", models.FloatField(blank=True, null=True)),
+                ("longitude", models.FloatField(blank=True, null=True)),
+                ("business_type", models.CharField(max_length=255)),
             ],
         ),
     ]
