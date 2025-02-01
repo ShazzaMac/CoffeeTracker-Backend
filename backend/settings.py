@@ -80,7 +80,7 @@ DATABASES = {
         'USER': 'my_user',             # The username you created
         'PASSWORD': 'new_password',     # The password for this user
         'HOST': 'localhost',           # The host, 'localhost' if running on the same machine
-        'PORT': '5432',                # The default PostgreSQL port
+        'PORT': '5433',                # The default PostgreSQL port
     }
 }
 
