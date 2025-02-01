@@ -1,7 +1,6 @@
-from django.db import models
-
 # Create your models here.
 from django.db import models
+
 
 class Business(models.Model):
     fhrs_id = models.IntegerField(unique=True)  # Unique ID from FHRS
