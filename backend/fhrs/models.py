@@ -16,3 +16,5 @@ class Business(models.Model):
 
 def __str__(self):
     return f"{self.name} ({self.rating}) - {self.address} - {self.business_type}"
+
+
