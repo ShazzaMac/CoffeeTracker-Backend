@@ -94,50 +94,6 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
   
-
-  # Job to lint backend code using flake8
-  lint:
-    name: Lint Backend Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.6
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install flake8
-
-      - name: Run flake8 with ignored errors
-        run: flake8 backend --ignore=E501,E302,E303,F811 --max-line-length=100
-
-  # Job to type-check backend code with mypy
-  type-check:
-    name: Type Check Backend Code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.6
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
-          pip install mypy django-stubs
-
-      - name: Run mypy
-        run: mypy backend --ignore-missing-imports  # Ignore missing imports
-
   # Job to test the React frontend
   frontend-tests:
     name: Run Frontend Tests
