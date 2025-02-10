@@ -1,4 +1,7 @@
 {
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -23,15 +26,12 @@
     "@testing-library/react": "^16.2.0",
     "concurrently": "^9.1.2"
   },
-  "name": "frontend",
-  "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "start": "concurrently \"npm run react-start\" \"cd ../backend && python3 manage.py runserver\"",
-    "react-start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "concurrently \"cd frontend && npm run react-start\" \"cd backend && source myenv/bin/activate && python3 manage.py runserver\"",
+    "react-start": "cd frontend && react-scripts start",
+    "build": "cd frontend && react-scripts build",
+    "test": "cd frontend && react-scripts test",
+    "eject": "cd frontend && react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -54,5 +54,4 @@
   "overrides": {
     "source-map-loader": "^2.0.0"
   }
-
 }
