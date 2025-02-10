@@ -1,30 +1,39 @@
-# Import necessary modules
 import logging
-
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.db.models import Avg, Count
-from django.http import JsonResponse
 from django.utils.crypto import get_random_string
+from django.http import JsonResponse
+from django.db.models import Count, Avg
 from django.utils.decorators import method_decorator
 from django.views import View
-from django_ratelimit.decorators import ratelimit
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_ratelimit.decorators import ratelimit
 
 from .models import CoffeeShop
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+class ProtectedEndpoint(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "You have access!"})
+    
+    
 # Initialize logger
 logger = logging.getLogger(__name__)
 
-
-# This view is used to register a new user
+# User Registration View
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
 
@@ -42,8 +51,7 @@ class UserRegistrationView(APIView):
         logger.error(f"Registration errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# This view is used to log in the user
+# Login View
 class LoginView(APIView):
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
@@ -67,31 +75,23 @@ class LoginView(APIView):
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# This view is used to send a password reset link to the user's email
-@method_decorator(
-    ratelimit(key="ip", rate="5/m", method="POST", block=True), name="dispatch"
-)
+# Forgot Password View
+@method_decorator(ratelimit(key="ip", rate="5/m", method="POST", block=True), name="dispatch")
 class ForgotPasswordView(APIView):
-    permission_classes = [AllowAny]  # Allow any user, even unauthenticated users
+    permission_classes = [AllowAny]
 
     def post(self, request):
         email = request.data.get("email")
         try:
             user = User.objects.get(email=email)
-
-            # Generates a new secure password of 12 characters
             new_password = get_random_string(length=12)
-
-            # Set the new password for the user
             user.set_password(new_password)
             user.save()
 
-            # Send the email with the new password
             send_mail(
                 "Your New Password",
                 f"Your new temporary password is: {new_password}\nPlease log in and change it immediately.",
-                "From the CoffeeTrackerApp Team",  # Replace with your sender email
+                "From the CoffeeTrackerApp Team",
                 [email],
             )
             logger.info(f"Password reset email sent to {email} with a new password.")
@@ -105,12 +105,10 @@ class ForgotPasswordView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-
-# This view is used to reset the user's password
+# Reset Password View
 class ResetPasswordView(APIView):
     def post(self, request, uid, token):
         try:
-            # Decode the UID and check token
             user = User.objects.get(pk=uid)
             if not default_token_generator.check_token(user, token):
                 return JsonResponse(
@@ -129,33 +127,14 @@ class ResetPasswordView(APIView):
                 {"error": "Invalid request."}, status=status.HTTP_400_BAD_REQUEST
             )
 
-
-from django.http import JsonResponse
-
-
-def custom_ratelimited(request, exception=None):
-    return JsonResponse({"error": "Rate limit exceeded. Try again later."}, status=429)
-
-
-class ProtectedEndpoint(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({"message": "You have access!"})
-
-
+# Dashboard View (API-based)
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
-
-
-class DashboardView(View):
-    def get(self, request):
-        return JsonResponse({"message": "Welcome to the dashboard!"})
 
     def get(self, request):
         return Response({"message": "Welcome to your dashboard!"})
 
-
+# Coffee Stats View
 class CoffeeStatsAPIView(APIView):
     def get(self, request):
         total_shops = CoffeeShop.objects.count()

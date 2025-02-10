@@ -5,11 +5,6 @@ from django.http import JsonResponse
 from django.core.mail import EmailMessage
 import json
 import os
-# api/views.py
-from django.http import JsonResponse
-
-def api(request):
-    return JsonResponse({"message": "API endpoint is working!"})
 
 def contact_form(request):
     if request.method == "POST":

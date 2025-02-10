@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET  # This is the XML parser that we will use to
 import requests
 from django.core.management.base import \
     BaseCommand  # Import the BaseCommand class from Django
-from fhrs.models import \
+from fhrs_api.models import \
     Business  # Import the Business model that we created earlier
 
 

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("fhrs", "0001_initial"),
+        ("fhrs_api", "0001_initial"),
     ]
 
     operations = [

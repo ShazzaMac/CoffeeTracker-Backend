@@ -2,7 +2,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from registration.serializers import (  # Import serializers
+from registration_api.serializers import (  # Import serializers
     UserLoginSerializer, UserRegistrationSerializer)
 from rest_framework import status
 from rest_framework.authtoken.models import Token

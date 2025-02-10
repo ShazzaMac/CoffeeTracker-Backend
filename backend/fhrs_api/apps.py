@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class FhrsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "fhrs"
+    name = "backend.fhrs_api"  # Updated to match its location.
