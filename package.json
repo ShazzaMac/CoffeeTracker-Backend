@@ -27,7 +27,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm run react-start\" \"cd ../backend && python3 manage.py runserver\"",
+    "start": "cd frontend && npm run react-start", // Run React from frontend
     "react-start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -54,5 +54,4 @@
   "overrides": {
     "source-map-loader": "^2.0.0"
   }
-
 }
