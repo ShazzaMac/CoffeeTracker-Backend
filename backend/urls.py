@@ -12,7 +12,6 @@ urlpatterns = [
     path("api/forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path("api/reset-password/<uid>/<token>/", ResetPasswordView.as_view(), name="reset-password"),
     path("api/", include("backend.fhrs_api.urls")),
-    path("api/", include("backend.urls")),
     path("api/", include("backend.registration_api.urls")),
     path("api/contact/", include("backend.contact_api.urls")),
 ]
