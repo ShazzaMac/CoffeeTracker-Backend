@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import os
 
 from pathlib import Path  # Importing Path class from pathlib module
 
@@ -67,6 +68,10 @@ CORS_ALLOW_ALL_ORIGINS = (
 )
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add the React app URL for CORS
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",  # Same as CORS allowed origins
 ]
 
 ROOT_URLCONF = "mycoffeeapp.urls"  # Root URL configuration
@@ -202,3 +207,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 RATELIMIT_VIEW = "django_ratelimit.views.ratelimited"
+
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
