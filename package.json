@@ -27,7 +27,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "cd frontend && npm run react-start", // Run React from frontend
+    "start": "cd frontend && npm run react-start", 
     "react-start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

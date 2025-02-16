@@ -9,3 +9,13 @@ def generate_secure_password():
 
 # Compare this snippet from backend/registration/views.py:
 # # registration/views.py (for DRF API)
+
+
+# from django.contrib.auth.models import extracted data
+from django.urls import path
+from .views import upload_file, save_extracted_data
+
+urlpatterns = [
+    path('upload/', upload_file),
+    path('save-extracted-data/', save_extracted_data),
+]
