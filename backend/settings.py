@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "registration",
+    "backend.registration", # alt for  the registration app to the list of installed apps
+
 ]
 
 MIDDLEWARE = [
