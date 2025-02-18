@@ -28,14 +28,14 @@ class FHRSTestCase(TestCase):
         """Create test businesses in the database for use in all tests"""
         cls.business1 = Business.objects.create(
             id=1, name="Test Cafe", rating="5", business_type="Cafe",
-            address="123 Test Street", latitude=1.0, longitude=1.0
-            fhrs_id=some_valid_value  # Provide a valid value for fhrs_id
+            address="123 Test Street", latitude=1.0, longitude=1.0,
+            fhrs_id="123456"  # Provide a valid value for fhrs_id
 
         )
         cls.business2 = Business.objects.create(
             id=2, name="Test Restaurant", rating="4", business_type="Restaurant",
-            address="456 Food Avenue", latitude=2.0, longitude=2.0
-            fhrs_id=some_valid_value  # Provide a valid value for fhrs_id
+            address="456 Food Avenue", latitude=2.0, longitude=2.0,
+            fhrs_id="654321"  # Provide a valid value for fhrs_id
 
         )
 

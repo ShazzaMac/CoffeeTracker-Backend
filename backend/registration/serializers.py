@@ -5,7 +5,12 @@ User = get_user_model()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, min_length=8)
+    password = serializers.CharField(
+        write_only=True, 
+        required=True, 
+        min_length=8,
+        error_messages={"min_length": "Password must be at least 8 characters long."}
+    )
 
     class Meta:
         model = User
