@@ -1,5 +1,4 @@
-# registration/serializers.py
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 
 User = get_user_model()
@@ -10,7 +9,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "email", "password"]  # Include fields for registration
+        fields = ["username", "email", "password"]
         extra_kwargs = {
             "email": {"required": True},
             "first_name": {"required": True},
@@ -26,9 +25,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
         return user
 
-
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)  # Ensure username is required
-    password = serializers.CharField(
-        write_only=True, required=True
-    )  # Ensure password is required
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            raise serializers.ValidationError("Both username and password are required.")
+
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise serializers.ValidationError({"non_field_errors": ["Invalid credentials"]})
+
+        return {"username": user.username, "password": password}  # Ensure password is returned
+
+
+

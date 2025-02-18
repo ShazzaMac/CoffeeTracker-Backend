@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import CoffeeShop
+from ..registration.models import CoffeeShop
 
 CustomUser = get_user_model()
 

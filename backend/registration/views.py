@@ -16,7 +16,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.http import QueryDict
 from .models import CoffeeShop
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 
@@ -43,30 +43,38 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# This view is used to log in the user
 class LoginView(APIView):
     def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
+        logger.info(f"Login attempt with raw data: {request.data}")
+
+        # Convert QueryDict to a normal dictionary
+        data = request.data.dict() if isinstance(request.data, QueryDict) else request.data
+        logger.info(f"Processed login data: {data}")
+
+        serializer = UserLoginSerializer(data=data)
         if serializer.is_valid():
-            username = serializer.validated_data["username"]
-            password = serializer.validated_data["password"]
+            username = serializer.validated_data.get("username")
+            password = serializer.validated_data.get("password")
+
+            if not password:
+                logger.error("Password field missing after serializer validation")
+                return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+
             user = authenticate(username=username, password=password)
+
             if user:
-                # Create or get a token for the user
                 token, created = Token.objects.get_or_create(user=user)
+                logger.info(f"Login successful for user: {username}")
                 return Response(
-                    {
-                        "message": "Login successful",
-                        "token": token.key,  # Return the token to the client
-                    },
+                    {"message": "Login successful", "token": token.key},
                     status=status.HTTP_200_OK,
                 )
             else:
-                return Response(
-                    {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
-                )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                logger.error(f"Login failed: Invalid credentials for username {username}")
+                return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
+        logger.error(f"Login validation failed: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # This view is used to send a password reset link to the user's email
 @method_decorator(
