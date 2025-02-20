@@ -1,2 +1,5 @@
+# This file is used to ignore files which should not be pushed to git
+
 __pycache__/
-__pycache__/
+
+

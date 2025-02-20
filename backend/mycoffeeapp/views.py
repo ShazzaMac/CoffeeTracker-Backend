@@ -1,48 +1,61 @@
 import os
 import json
-from django.shortcuts import render, redirect
+import logging
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.db import connection
 from django.conf import settings
-from .ocr_utils import extract_text, generate_json_ai, allowed_file
+from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .ocr_utils import extract_text, generate_json_ai, allowed_file
+from .models import ShopResult
 
+logger = logging.getLogger(__name__)
 
 # Ensure upload folder exists
-UPLOAD_FOLDER = os.path.join(settings.MEDIA_ROOT, 'uploads')
+UPLOAD_FOLDER = os.path.join(settings.MEDIA_ROOT, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+class MyProtectedView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+def get_csrf_token(request):
+    """Get CSRF token for frontend."""
+    if request.method == "GET":
+        token = get_token(request)
+        return JsonResponse({"csrfToken": token})
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 def upload_file(request):
-    """Handle image upload, extract text with OCR, and send extracted data + user inputs back to frontend."""
-    if request.method == 'POST' and 'file' in request.FILES:
-        file = request.FILES['file']
-        user_inputs = json.loads(request.POST.get('formData', '{}'))  # Get user inputs
+    """Handle file upload, extract text, and process with AI."""
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
 
-        if allowed_file(file.name):
-            file_path = default_storage.save(f"{settings.MEDIA_ROOT}/uploads/{file.name}", file)
+        if not allowed_file(file.name):
+            return JsonResponse({"error": "Invalid file type"}, status=400)
 
-            # Extract text with OCR
-            text = extract_text(file_path)
+        file_path = default_storage.save(f"uploads/{file.name}", file)
 
-            # Process text with Gemini AI
-            extracted_data = generate_json_ai(text)
+        # Extract text with OCR
+        text = extract_text(file_path)
 
-            # Send extracted data + user inputs to frontend
-            return JsonResponse({
-                "extracted_data": extracted_data,
-                "user_inputs": user_inputs,
-            })
+        # Process text with Gemini AI
+        extracted_data = generate_json_ai(text)
 
-    return JsonResponse({'error': 'Invalid file type or missing file'}, status=400)
+        return JsonResponse({"extracted_data": extracted_data})
 
-@csrf_exempt
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 def save_extracted_data(request):
     """Save extracted OCR data + user inputs to the database."""
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
             data = json.loads(request.body)
-
             extracted_data = data.get("extractedData", [])
             user_inputs = data.get("userInputs", {})
 
@@ -51,19 +64,12 @@ def save_extracted_data(request):
                 "user_inputs": user_inputs,
             }
 
-            # Store in PostgreSQL
-            with connection.cursor() as cursor:
-                cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS shop_res (
-                        id SERIAL PRIMARY KEY,
-                        json_data TEXT NOT NULL
-                    )
-                ''')
-                cursor.execute("INSERT INTO shop_res (json_data) VALUES (%s)", [json.dumps(final_data)])
+            shop_result = ShopResult.objects.create(json_data=json.dumps(final_data))
 
-            return JsonResponse({"message": "Data saved successfully!"}, status=201)
+            return JsonResponse({"message": "Data saved successfully!", "id": shop_result.id}, status=201)
 
         except Exception as e:
+            logger.error(f"Error saving data: {e}")
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
@@ -77,10 +83,27 @@ def results_data(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT json_data FROM shop_res")
         results = [row[0] for row in cursor.fetchall()]
-    return JsonResponse({'results': results})
-
-
-from django.shortcuts import render
+    return JsonResponse({"results": results})
 
 def index(request):
-    return render(request, 'mycoffeeapp/base.html')  # Render the base.html template
+    """Render the base.html template."""
+    return render(request, "mycoffeeapp/base.html")
+
+def your_view(request):
+    """Debug CSRF token issues."""
+    csrf_token_cookie = request.COOKIES.get("csrftoken")
+    csrf_token_meta = request.META.get("HTTP_X_CSRFTOKEN")  # Check request headers
+
+    if not csrf_token_cookie:
+        logger.warning("No CSRF token found in cookies.")
+
+    if csrf_token_meta != csrf_token_cookie:
+        logger.error("CSRF token mismatch: request does not match cookie.")
+
+    return JsonResponse({"message": "Success"})
+
+@csrf_exempt  # REMOVE this in production (only for testing)
+def my_view(request):
+    if request.method == "POST":
+        return JsonResponse({"message": "POST request successful"})
+    return JsonResponse({"error": "Invalid request"}, status=400)

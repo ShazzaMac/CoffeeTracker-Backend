@@ -1,4 +1,3 @@
-# models.py
 from django.db import models
 
 class Shop(models.Model):
@@ -9,6 +8,9 @@ class Shop(models.Model):
     image = models.ImageField(upload_to='shop_images/', null=True, blank=True)
     opening_times = models.TextField(null=True, blank=True)
     features = models.JSONField(null=True, blank=True)  # Store feature flags in a JSON format
+
+    def __str__(self):
+        return self.name
 
 class Review(models.Model):
     shop = models.ForeignKey(Shop, related_name='reviews', on_delete=models.CASCADE)
@@ -24,3 +26,10 @@ class PriceRecord(models.Model):
     submitter_name = models.CharField(max_length=255)
     features = models.JSONField()  # Store the features like dogFriendly, wifi, etc.
     ratings = models.JSONField()  # Store the ratings in a JSON format
+
+
+class ShopResult(models.Model):
+    json_data = models.TextField()  # Store the JSON data as a text field
+
+    def __str__(self):
+        return f"ShopResult {self.id}"
