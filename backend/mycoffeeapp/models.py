@@ -1,5 +1,6 @@
 from django.db import models
 
+# This model represents a coffee shop in the database
 class Shop(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
@@ -12,12 +13,17 @@ class Shop(models.Model):
     def __str__(self):
         return self.name
 
+# This model represents a review for a coffee shop
 class Review(models.Model):
     shop = models.ForeignKey(Shop, related_name='reviews', on_delete=models.CASCADE)
     user = models.CharField(max_length=255)
     rating = models.IntegerField()
     comment = models.TextField()
 
+    def __str__(self):
+        return f"{self.user} - {self.shop.name}"
+    
+# This model represents a price record for a coffee shop
 class PriceRecord(models.Model):
     shop = models.ForeignKey(Shop, related_name='price_records', on_delete=models.CASCADE)
     date = models.DateField()
@@ -27,9 +33,25 @@ class PriceRecord(models.Model):
     features = models.JSONField()  # Store the features like dogFriendly, wifi, etc.
     ratings = models.JSONField()  # Store the ratings in a JSON format
 
-
+    def __str__(self):
+        return f"{self.beverage} - {self.shop.name} - {self.date}"
+    
+# This model represents the result of processing the extracted data
 class ShopResult(models.Model):
     json_data = models.TextField()  # Store the JSON data as a text field
 
     def __str__(self):
         return f"ShopResult {self.id}"
+    
+# This model represents a contact message sent by a user
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+#This bit allows the data to be displayed in a more readable format
+    def __str__(self):
+        return self.name
+    
+    

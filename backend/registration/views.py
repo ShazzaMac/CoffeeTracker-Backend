@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg, Count
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest, QueryDict
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -16,9 +16,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import QueryDict
 from .models import CoffeeShop
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
+
 
 # Initialize logger
 logger = logging.getLogger(__name__)

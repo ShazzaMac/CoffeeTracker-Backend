@@ -5,6 +5,8 @@ from .views import upload_file, save_extracted_data, results_data, results_page
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import get_csrf_token
+from .views import csrf_token  # Import the csrf_token view
+from .views import contact_form
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
@@ -41,6 +43,12 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),  
     path("api/", include("priceapp.urls")), 
     path("api/csrf/", get_csrf_token, name="get_csrf_token"), 
+    path('api/csrf-token/', csrf_token, name='csrf_token'),  # Add this URL pattern
+    path('api/submit-price/', include('priceapp.urls')),
+    path('api/prices/', include('priceapp.urls')),
+    path('accounts/', include('accounts.urls')),  # Adjust to the app name and path
+    path("api/contact/", contact_form, name="contact_form"),
+
 
 ]
 

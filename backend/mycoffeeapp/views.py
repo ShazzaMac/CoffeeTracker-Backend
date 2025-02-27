@@ -1,20 +1,54 @@
 import os
 import json
 import logging
+import smtplib
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.core.mail import send_mail
 from django.core.files.storage import default_storage
 from django.db import connection
 from django.conf import settings
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
+from django.views.decorators.http import require_POST
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .ocr_utils import extract_text, generate_json_ai, allowed_file
-from .models import ShopResult
+from .models import ShopResult, ContactMessage
 
 logger = logging.getLogger(__name__)
+
+
+def csrf_token(request):
+    return JsonResponse({'csrf_token': get_token(request)})
+
+@csrf_exempt
+def contact_form(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            # Log the parsed JSON data
+            logger.info("Parsed JSON data: %s", data)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON.")
+        
+        name = data.get('name')
+        email = data.get('email')
+        message = data.get('message')
+
+        # Log each field's value and type
+        logger.info("Name: %r (%s)", name, type(name))
+        logger.info("Email: %r (%s)", email, type(email))
+        logger.info("Message: %r (%s)", message, type(message))
+
+        if not name or not email or not message:
+            return HttpResponseBadRequest("All fields are required.")
+        
+        # Process the message (save to database, send email, etc.)
+        return JsonResponse({"success": "Message sent successfully!"}, status=201)
+    
+    return HttpResponseBadRequest("Invalid method.")
 
 # Ensure upload folder exists
 UPLOAD_FOLDER = os.path.join(settings.MEDIA_ROOT, "uploads")
@@ -102,7 +136,7 @@ def your_view(request):
 
     return JsonResponse({"message": "Success"})
 
-@csrf_exempt  # REMOVE this in production (only for testing)
+# REMOVE this in production (only for testing)
 def my_view(request):
     if request.method == "POST":
         return JsonResponse({"message": "POST request successful"})

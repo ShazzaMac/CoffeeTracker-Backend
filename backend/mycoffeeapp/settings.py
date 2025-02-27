@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,12 +12,12 @@ SECRET_KEY = "django-insecure-yh_k+-$rq=b$#096nu(4p%ycdkwh8zpv_y6*peca_+b7y23fj+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+#This is the list of allowed hosts that can access the project
 ALLOWED_HOSTS = []
 
-# Application definition
 
+#This is the list of installed apps that are required for the project to work
 INSTALLED_APPS = [
-
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -27,14 +29,14 @@ INSTALLED_APPS = [
     "registration",
     "fhrs",
     "rest_framework",
-    "rest_framework_simplejwt",  # ✅ Keep only one instance
+    "rest_framework_simplejwt",  
     "accounts",
     "priceapp",
     "mycoffeeapp",
     "drf_spectacular",
 ]
 
-
+#this is for the registration app to work 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -42,43 +44,61 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+# middleware is a framework of hooks into Django's request/response processing
+# It's a light, low-level plugin system for globally altering Django's input or output
+# MIDDLEWARE is a list of middleware classes that have access to the request and response in Django
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "corsheaders.middleware.CorsMiddleware",  # Enable CORS middleware
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    "django.middleware.security.SecurityMiddleware", # This middleware is required for security
+    "django.contrib.sessions.middleware.SessionMiddleware", # This middleware is required for Django sessions
+    "django.middleware.common.CommonMiddleware", # This middleware is required for CSRF protection
+    "corsheaders.middleware.CorsMiddleware",  # This middleware is required for CORS which allows cross-origin requests
+    'django.middleware.csrf.CsrfViewMiddleware',
+    "django.contrib.auth.middleware.AuthenticationMiddleware", # This middleware is required for Django authentication
+    "django.contrib.messages.middleware.MessageMiddleware", # This middleware is required for Django messages framework
+    "django.middleware.clickjacking.XFrameOptionsMiddleware", # This middleware is required for Clickjacking protection
     "django_ratelimit.middleware.RatelimitMiddleware",  # Rate limiting middleware
 ]
 
-# CORS configuration
+# CORS configuration is required to allow cross-origin requests
 CORS_ALLOW_CREDENTIALS = True  # This allows cookies to be sent
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React frontend
 ]
 
-# CSRF settings
+
+# CSRF settings which are required for security
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",  # Backend
     "http://localhost:3000",  # React Frontend
     "http://127.0.0.1:8000/api/upload/",  # Upload endpoint
 ]
-CSRF_COOKIE_SECURE = False  # Set to True in production
+CSRF_COOKIE_SAMESITE = 'None'  # For cross-site cookies
+CSRF_COOKIE_SECURE = True    
+CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = False # Allow JavaScript to read the CSRF cookie
-CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_USE_SESSIONS = False
+SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = False  # Set to True in production
-SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = False
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = False  # Set to True in production
 
 
+# JWT settings which are required for authentication also and work  with csrf settings to ensure security
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # 5 minutes for access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # 1 day for refresh token
+    'ROTATE_REFRESH_TOKENS': True,  # To rotate the refresh token when it's used
+    'BLACKLIST_AFTER_ROTATION': True,  # To blacklist old refresh tokens
+}
+
+#this is the list of the root urls that are required for the project to work
 ROOT_URLCONF = "mycoffeeapp.urls"
 
+#This is the list of the templates that are required for the project to work
+#A template is a text file defining the structure or layout of a file (such as an HTML page), with placeholders used to represent actual data provided by a database or other source.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -95,9 +115,10 @@ TEMPLATES = [
     },
 ]
 
+# WSGI is a specification that describes how a web server communicates with web applications
 WSGI_APPLICATION = "mycoffeeapp.wsgi.application"
 
-# Database configuration
+# Database configuration for my PostgreSQL database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -109,7 +130,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+# Password validation for user authentication
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -128,17 +149,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Internationalization settings for the project
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images) which are required for the project to work
 STATIC_URL = "static/"
 
+#this means that the static files are stored in the static folder in the root directory
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Logging configuration
+# Logging configuration for the project to log errors and warnings
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -160,18 +183,28 @@ LOGGING = {
     },
 }
 
-# Email settings
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "coffeetrackerapphelp@gmail.com"  # Replace with your Gmail address
-EMAIL_HOST_PASSWORD = "wttq iolz lwik gojr"  # Replace with your App Password
-DEFAULT_FROM_EMAIL = "your_email@gmail.com"
+# Gmail settings for password reset emails
+EMAIL_BACKEND_GMAIL = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST_GMAIL = "smtp.gmail.com"
+EMAIL_PORT_GMAIL = 587
+EMAIL_USE_TLS_GMAIL = True
+EMAIL_HOST_USER_GMAIL = "coffeetrackerapphelp@gmail.com"
+EMAIL_HOST_PASSWORD_GMAIL = "pngo xmrk xpri yovw"
+DEFAULT_FROM_EMAIL_GMAIL = "coffeetrackerapphelp@gmail.com"
 
-# Media files
+# Outlook settings for contact form emails
+EMAIL_BACKEND_OUTLOOK = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST_OUTLOOK = "outlook.office365.com"
+EMAIL_PORT_OUTLOOK = 587
+EMAIL_USE_TLS_OUTLOOK = True
+EMAIL_HOST_USER_OUTLOOK = "sharonplumridge@outlook.com"
+EMAIL_HOST_PASSWORD_OUTLOOK = "Plu13064005"
+DEFAULT_FROM_EMAIL_OUTLOOK = "sharonplumridge@outlook.com"
+
+
+# Media files which are for user-uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# Rate limiting
+# Rate limiting which is required for security
 RATELIMIT_VIEW = "django_ratelimit.views.ratelimited"

@@ -6,6 +6,9 @@ from .models import UserProfile
 from .serializers import UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
+
 
 @api_view(['GET'])
 def get_user_profile(request):
@@ -36,3 +39,17 @@ def update_user_profile(request):
         serializer.save()
         return Response(serializer.data)  # Return updated profile data
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework.permissions import IsAuthenticated
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        # Return user data
+        return Response({
+            'username': user.username,
+            'email': user.email,
+            'phone': user.profile.phone,
+            'about': user.profile.about,
+        })
