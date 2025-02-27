@@ -19,9 +19,10 @@ from rest_framework.views import APIView
 from .models import CoffeeShop
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 
-
+# +-----------------------------------------------------+
 # Initialize logger
 logger = logging.getLogger(__name__)
+# +-----------------------------------------------------+
 
 
 # This view is used to register a new user
@@ -42,6 +43,7 @@ class UserRegistrationView(APIView):
         logger.error(f"Registration errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# +-----------------------------------------------------+
 
 class LoginView(APIView):
     def post(self, request):
@@ -75,6 +77,8 @@ class LoginView(APIView):
 
         logger.error(f"Login validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# +-----------------------------------------------------+
 
 # This view is used to send a password reset link to the user's email
 @method_decorator(
@@ -113,6 +117,7 @@ class ForgotPasswordView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+# +-----------------------------------------------------+
 
 # This view is used to reset the user's password
 class ResetPasswordView(APIView):
@@ -144,6 +149,8 @@ from django.http import JsonResponse
 def custom_ratelimited(request, exception=None):
     return JsonResponse({"error": "Rate limit exceeded. Try again later."}, status=429)
 
+# +-----------------------------------------------------+
+
 
 class ProtectedEndpoint(APIView):
     permission_classes = [IsAuthenticated]
@@ -151,6 +158,7 @@ class ProtectedEndpoint(APIView):
     def get(self, request):
         return Response({"message": "You have access!"})
 
+# +-----------------------------------------------------+
 
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
@@ -163,6 +171,7 @@ class DashboardView(View):
     def get(self, request):
         return Response({"message": "Welcome to your dashboard!"})
 
+# +-----------------------------------------------------+
 
 class CoffeeStatsAPIView(APIView):
     def get(self, request):

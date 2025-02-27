@@ -6,6 +6,7 @@ from .models import PriceSubmission
 from .serializers import PriceSubmissionSerializer
 from rest_framework.generics import ListAPIView
 
+# +-----------------------------------------------------+
 
 class PriceListView(ListAPIView):
     queryset = PriceSubmission.objects.all()

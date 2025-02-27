@@ -23,7 +23,11 @@ logger = logging.getLogger(__name__)
 def csrf_token(request):
     return JsonResponse({'csrf_token': get_token(request)})
 
-@csrf_exempt
+
+from django.http import JsonResponse, HttpResponseBadRequest
+from .models import ContactMessage
+import json
+
 def contact_form(request):
     if request.method == 'POST':
         try:
@@ -45,10 +49,14 @@ def contact_form(request):
         if not name or not email or not message:
             return HttpResponseBadRequest("All fields are required.")
         
-        # Process the message (save to database, send email, etc.)
+        # Save the contact message to the database
+        contact_message = ContactMessage.objects.create(name=name, email=email, message=message)
+
         return JsonResponse({"success": "Message sent successfully!"}, status=201)
     
     return HttpResponseBadRequest("Invalid method.")
+
+# +-----------------------------------------------------+
 
 # Ensure upload folder exists
 UPLOAD_FOLDER = os.path.join(settings.MEDIA_ROOT, "uploads")
@@ -136,8 +144,13 @@ def your_view(request):
 
     return JsonResponse({"message": "Success"})
 
-# REMOVE this in production (only for testing)
+# +-----------------------------------------------------+
+# |   # REMOVE this in production (only for testing)    |
+# +-----------------------------------------------------+
+
 def my_view(request):
     if request.method == "POST":
         return JsonResponse({"message": "POST request successful"})
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+# +-----------------------------------------------------+

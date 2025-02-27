@@ -48,10 +48,9 @@ class ContactMessage(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
 #This bit allows the data to be displayed in a more readable format
     def __str__(self):
         return self.name
     
-    
+

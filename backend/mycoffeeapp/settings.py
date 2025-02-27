@@ -13,7 +13,7 @@ SECRET_KEY = "django-insecure-yh_k+-$rq=b$#096nu(4p%ycdkwh8zpv_y6*peca_+b7y23fj+
 DEBUG = True
 
 #This is the list of allowed hosts that can access the project
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 
 #This is the list of installed apps that are required for the project to work
@@ -34,7 +34,22 @@ INSTALLED_APPS = [
     "priceapp",
     "mycoffeeapp",
     "drf_spectacular",
+
+    
 ]
+
+# Static files (CSS, JavaScript, Images) which are required for the project to work
+# These setting are for the django admin panel
+SITE_ID = 1 # Required for Django sites framework
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # Adjust if your static files are in a different directory
+]
+
+
 
 #this is for the registration app to work 
 REST_FRAMEWORK = {
@@ -48,7 +63,6 @@ REST_FRAMEWORK = {
 # It's a light, low-level plugin system for globally altering Django's input or output
 # MIDDLEWARE is a list of middleware classes that have access to the request and response in Django
 MIDDLEWARE = [
-    
     "django.middleware.security.SecurityMiddleware", # This middleware is required for security
     "django.contrib.sessions.middleware.SessionMiddleware", # This middleware is required for Django sessions
     "django.middleware.common.CommonMiddleware", # This middleware is required for CSRF protection
@@ -58,7 +72,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware", # This middleware is required for Django messages framework
     "django.middleware.clickjacking.XFrameOptionsMiddleware", # This middleware is required for Clickjacking protection
     "django_ratelimit.middleware.RatelimitMiddleware",  # Rate limiting middleware
+
 ]
+
 
 # CORS configuration is required to allow cross-origin requests
 CORS_ALLOW_CREDENTIALS = True  # This allows cookies to be sent
@@ -74,7 +90,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000/api/upload/",  # Upload endpoint
 ]
 CSRF_COOKIE_SAMESITE = 'None'  # For cross-site cookies
-CSRF_COOKIE_SECURE = True    
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = False # Allow JavaScript to read the CSRF cookie
 CSRF_USE_SESSIONS = False
@@ -154,9 +169,6 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images) which are required for the project to work
-STATIC_URL = "static/"
 
 #this means that the static files are stored in the static folder in the root directory
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

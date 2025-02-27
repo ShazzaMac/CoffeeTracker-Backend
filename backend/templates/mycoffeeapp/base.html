@@ -9,5 +9,11 @@
   </head>
   <body>
     <div id="root"></div>  <!-- React app will be injected here -->
+    <form method="post">
+      {% csrf_token %}
+      <!-- Your form fields here -->
+      <button type="submit">Log in</button>
+  </form>
+  
   </body>
 </html>

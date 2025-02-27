@@ -1,5 +1,10 @@
 # backend/accounts/views.py
-
+from profile import Profile
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
 from .models import UserProfile
@@ -10,46 +15,41 @@ from rest_framework.views import APIView
 
 
 
-@api_view(['GET'])
-def get_user_profile(request):
-    """ Retrieve the profile data for the logged-in user """
+
+@login_required
+def profile(request):
     try:
-        profile = UserProfile.objects.get(user=request.user)
-    except UserProfile.DoesNotExist:
-        return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = UserProfileSerializer(profile)
-    return Response(serializer.data)
-
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
-def update_user_profile(request):
-    """ Update the profile data for the logged-in user """
-    try:
-        # Ensure the request.user is authenticated
-        profile = UserProfile.objects.get(user=request.user)
-    except UserProfile.DoesNotExist:
-        return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-    # Serialize the data to update the profile
-    serializer = UserProfileSerializer(profile, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)  # Return updated profile data
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-from rest_framework.permissions import IsAuthenticated
-
-class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        # Return user data
-        return Response({
-            'username': user.username,
-            'email': user.email,
-            'phone': user.profile.phone,
-            'about': user.profile.about,
+        profile = Profile.objects.get(user=request.user)
+        return JsonResponse({
+            'username': profile.user.username,
+            'email': profile.user.email,
+            'phone': profile.phone,
+            'about': profile.about,
+            'profilePhoto': profile.profile_photo.url if profile.profile_photo else None,
         })
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Profile not found"}, status=404)
+
+@csrf_exempt
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        data = request.json()
+        profile = Profile.objects.get(user=request.user)
+        profile.phone = data.get("phone", profile.phone)
+        profile.about = data.get("about", profile.about)
+        profile.save()
+        return JsonResponse({"message": "Profile updated successfully"})
+
+@csrf_exempt
+@login_required
+def upload_photo(request):
+    if request.method == 'POST' and request.FILES.get('photo'):
+        profile = Profile.objects.get(user=request.user)
+        profile.profile_photo = request.FILES['photo']
+        profile.save()
+        return JsonResponse({
+            'profilePhoto': profile.profile_photo.url
+        })
+    return JsonResponse({"error": "Failed to upload photo"}, status=400)
+
