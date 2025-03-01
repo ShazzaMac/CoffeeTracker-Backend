@@ -8,6 +8,8 @@ from .views import get_csrf_token
 from .views import csrf_token  # Import the csrf_token view
 from .views import contact_form
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from fhrs.views import CoffeeShopListView
+
 
 
 
@@ -48,6 +50,8 @@ urlpatterns = [
     path('api/prices/', include('priceapp.urls')),
     path('accounts/', include('accounts.urls')),  # Adjust to the app name and path
     path("api/contact/", contact_form, name="contact_form"),
+    path('fhrs/', include('fhrs.urls')),
+     
 
 
 ]

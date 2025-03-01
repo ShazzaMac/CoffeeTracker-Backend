@@ -1,9 +1,8 @@
 # Create your models here.
 from django.db import models
 
-
 class Business(models.Model):
-    fhrs_id = models.IntegerField(unique=True)  # Unique ID from FHRS
+    fhrs_id = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
     address = models.TextField()
     rating = models.CharField(max_length=100, blank=True, null=True)
@@ -11,10 +10,8 @@ class Business(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     business_type = models.CharField(max_length=255)
 
-    # this is a method that returns a string representation of the object to the console
+    def __str__(self):
+        return f"{self.name} ({self.rating}) - {self.address} - {self.business_type}"
 
-
-def __str__(self):
-    return f"{self.name} ({self.rating}) - {self.address} - {self.business_type}"
-
-
+    class Meta:
+        pass

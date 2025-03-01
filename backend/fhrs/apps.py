@@ -1,6 +1,6 @@
+
 from django.apps import AppConfig
 
-
 class FhrsConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "fhrs"
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'fhrs'  # Ensure this matches the folder name
