@@ -15,20 +15,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["username", "email", "password"]
+        # Ensure email is required
         extra_kwargs = {
             "email": {"required": True},
-            "first_name": {"required": True},
-            "last_name": {"required": True},
+        
         }
 
     def create(self, validated_data):
         # Create a user and hash the password
-        user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-        )
-        return user
+         return User.objects.create_user(**validated_data)
+
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()

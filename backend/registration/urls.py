@@ -24,7 +24,6 @@ urlpatterns = [
     path("api-token-auth/", obtain_auth_token, name="login"),  # Ensure the path matches
     path("api/register/", UserRegistrationView.as_view(), name="register"),
     path("register/", UserRegistrationView.as_view(), name="register"),
-
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path(

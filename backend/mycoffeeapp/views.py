@@ -16,17 +16,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .ocr_utils import extract_text, generate_json_ai, allowed_file
 from .models import ShopResult, ContactMessage
-
+from .models import ContactMessage
 logger = logging.getLogger(__name__)
-
 
 def csrf_token(request):
     return JsonResponse({'csrf_token': get_token(request)})
 
 
-from django.http import JsonResponse, HttpResponseBadRequest
-from .models import ContactMessage
-import json
 
 def contact_form(request):
     if request.method == 'POST':

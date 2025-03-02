@@ -1,22 +1,23 @@
 # Import necessary modules
 import logging
-
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from accounts.models import UserProfile
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg, Count
-from django.http import JsonResponse, HttpResponseBadRequest, QueryDict
+from django.http import JsonResponse, QueryDict
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.views import View
 from django_ratelimit.decorators import ratelimit
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny ,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import CoffeeShop
+from accounts.models import UserProfile
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 
 # +-----------------------------------------------------+
@@ -24,22 +25,25 @@ from .serializers import UserLoginSerializer, UserRegistrationSerializer
 logger = logging.getLogger(__name__)
 # +-----------------------------------------------------+
 
-
-# This view is used to register a new user
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         logger.info(f"Received registration data: {request.data}")
+
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.save()  # This calls serializer.create()
+          
+            # Generate authentication token
             token, created = Token.objects.get_or_create(user=user)
+            
             logger.info("User created successfully")
             return Response(
                 {"message": "User created successfully", "token": token.key},
                 status=status.HTTP_201_CREATED,
             )
+
         logger.error(f"Registration errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

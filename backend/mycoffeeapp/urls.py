@@ -4,15 +4,9 @@ from django.conf import settings
 from .views import upload_file, save_extracted_data, results_data, results_page
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import get_csrf_token
-from .views import csrf_token  # Import the csrf_token view
-from .views import contact_form
+from .views import get_csrf_token, csrf_token, contact_form
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from fhrs.views import CoffeeShopListView
-
-
-
-
 from registration.views import (
     ForgotPasswordView,
     LoginView,
@@ -51,10 +45,9 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),  # Adjust to the app name and path
     path("api/contact/", contact_form, name="contact_form"),
     path('fhrs/', include('fhrs.urls')),
-     
-
-
 ]
+
+
 
 # Serve media files in development
 if settings.DEBUG:

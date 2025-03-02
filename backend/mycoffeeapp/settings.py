@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from datetime import timedelta
 
@@ -30,10 +31,10 @@ INSTALLED_APPS = [
     "fhrs",
     "rest_framework",
     "rest_framework_simplejwt",  
-    "accounts",
     "priceapp",
     "mycoffeeapp",
     "drf_spectacular",
+    "accounts.apps.AccountsConfig",
 
     
 ]
@@ -103,7 +104,7 @@ SECURE_SSL_REDIRECT = False  # Set to True in production
 
 # JWT settings which are required for authentication also and work  with csrf settings to ensure security
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # 5 minutes for access token
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # 5 minutes for access token
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # 1 day for refresh token
     'ROTATE_REFRESH_TOKENS': True,  # To rotate the refresh token when it's used
     'BLACKLIST_AFTER_ROTATION': True,  # To blacklist old refresh tokens
@@ -215,7 +216,7 @@ DEFAULT_FROM_EMAIL_OUTLOOK = "sharonplumridge@outlook.com"
 
 
 # Media files which are for user-uploaded files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / "media" # This is the directory where user-uploaded files are stored
 MEDIA_URL = '/media/'
 
 # Rate limiting which is required for security
