@@ -45,6 +45,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),  # Adjust to the app name and path
     path("api/contact/", contact_form, name="contact_form"),
     path('fhrs/', include('fhrs.urls')),
+    path('api/fhrs/', include('fhrs.urls')),
+    path('api/cafes/', CoffeeShopListView.as_view(), name='api-cafes'),
 ]
 
 
