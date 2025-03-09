@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from django.views.decorators.http import require_POST
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .ocr_utils import extract_text, generate_json_ai, allowed_file
+from api.ocrapp.utils import extract_text, generate_json_ai
 from .models import ShopResult, ContactMessage
 from .models import ContactMessage
 logger = logging.getLogger(__name__)
@@ -68,6 +68,11 @@ def get_csrf_token(request):
         token = get_token(request)
         return JsonResponse({"csrfToken": token})
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+def allowed_file(filename):
+    """Check if the file type is allowed."""
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def upload_file(request):
     """Handle file upload, extract text, and process with AI."""

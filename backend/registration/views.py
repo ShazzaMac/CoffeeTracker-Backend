@@ -48,7 +48,6 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # +-----------------------------------------------------+
-
 class LoginView(APIView):
     def post(self, request):
         logger.info(f"Login attempt with raw data: {request.data}")
@@ -57,31 +56,30 @@ class LoginView(APIView):
         data = request.data.dict() if isinstance(request.data, QueryDict) else request.data
         logger.info(f"Processed login data: {data}")
 
-        serializer = UserLoginSerializer(data=data)
-        if serializer.is_valid():
-            username = serializer.validated_data.get("username")
-            password = serializer.validated_data.get("password")
+        username = data.get("username")
+        password = data.get("password")
 
-            if not password:
-                logger.error("Password field missing after serializer validation")
-                return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not username or not password:
+            logger.error("Username or password missing")
+            return Response({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-            user = authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)
 
-            if user:
-                token, created = Token.objects.get_or_create(user=user)
-                logger.info(f"Login successful for user: {username}")
-                return Response(
-                    {"message": "Login successful", "token": token.key},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                logger.error(f"Login failed: Invalid credentials for username {username}")
-                return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            logger.info(f"Login successful for user: {username}")
 
-        logger.error(f"Login validation failed: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "Login successful",
+                    "token": token.key,
+                    "username": user.username,  # ✅ Ensure username is returned
+                },
+                status=status.HTTP_200_OK,
+            )
 
+        logger.error(f"Login failed: Invalid credentials for username {username}")
+        return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 # +-----------------------------------------------------+
 
 # This view is used to send a password reset link to the user's email

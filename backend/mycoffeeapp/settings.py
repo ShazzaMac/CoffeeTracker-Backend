@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",  
     "priceapp",
+    "api.ocrapp",
     "mycoffeeapp",
     "drf_spectacular",
     "accounts.apps.AccountsConfig",
