@@ -1,22 +1,23 @@
 # Import necessary modules
 import logging
-
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from accounts.models import UserProfile
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg, Count
-from django.http import JsonResponse, HttpResponseBadRequest, QueryDict
+from django.http import JsonResponse, QueryDict
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.views import View
 from django_ratelimit.decorators import ratelimit
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny ,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import CoffeeShop
+from accounts.models import UserProfile
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 
 # +-----------------------------------------------------+
@@ -24,27 +25,29 @@ from .serializers import UserLoginSerializer, UserRegistrationSerializer
 logger = logging.getLogger(__name__)
 # +-----------------------------------------------------+
 
-
-# This view is used to register a new user
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         logger.info(f"Received registration data: {request.data}")
+
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.save()  # This calls serializer.create()
+          
+            # Generate authentication token
             token, created = Token.objects.get_or_create(user=user)
+            
             logger.info("User created successfully")
             return Response(
                 {"message": "User created successfully", "token": token.key},
                 status=status.HTTP_201_CREATED,
             )
+
         logger.error(f"Registration errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # +-----------------------------------------------------+
-
 class LoginView(APIView):
     def post(self, request):
         logger.info(f"Login attempt with raw data: {request.data}")
@@ -53,31 +56,30 @@ class LoginView(APIView):
         data = request.data.dict() if isinstance(request.data, QueryDict) else request.data
         logger.info(f"Processed login data: {data}")
 
-        serializer = UserLoginSerializer(data=data)
-        if serializer.is_valid():
-            username = serializer.validated_data.get("username")
-            password = serializer.validated_data.get("password")
+        username = data.get("username")
+        password = data.get("password")
 
-            if not password:
-                logger.error("Password field missing after serializer validation")
-                return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not username or not password:
+            logger.error("Username or password missing")
+            return Response({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-            user = authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)
 
-            if user:
-                token, created = Token.objects.get_or_create(user=user)
-                logger.info(f"Login successful for user: {username}")
-                return Response(
-                    {"message": "Login successful", "token": token.key},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                logger.error(f"Login failed: Invalid credentials for username {username}")
-                return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            logger.info(f"Login successful for user: {username}")
 
-        logger.error(f"Login validation failed: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "Login successful",
+                    "token": token.key,
+                    "username": user.username,  # ✅ Ensure username is returned
+                },
+                status=status.HTTP_200_OK,
+            )
 
+        logger.error(f"Login failed: Invalid credentials for username {username}")
+        return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 # +-----------------------------------------------------+
 
 # This view is used to send a password reset link to the user's email

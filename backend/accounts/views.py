@@ -1,55 +1,40 @@
-# backend/accounts/views.py
-from profile import Profile
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
+# accounts/views.py
+from django.contrib.auth.models import User
+from rest_framework import permissions, status
 from rest_framework.response import Response
-from .models import UserProfile
-from .serializers import UserProfileSerializer
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from .serializers import UserProfileSerializer, PasswordChangeSerializer
 
+class ProfileUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request):
+        user = request.user
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
 
+    def patch(self, request):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-def profile(request):
-    try:
-        profile = Profile.objects.get(user=request.user)
-        return JsonResponse({
-            'username': profile.user.username,
-            'email': profile.user.email,
-            'phone': profile.phone,
-            'about': profile.about,
-            'profilePhoto': profile.profile_photo.url if profile.profile_photo else None,
-        })
-    except ObjectDoesNotExist:
-        return JsonResponse({"error": "Profile not found"}, status=404)
+class PasswordChangeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-@csrf_exempt
-@login_required
-def update_profile(request):
-    if request.method == 'POST':
-        data = request.json()
-        profile = Profile.objects.get(user=request.user)
-        profile.phone = data.get("phone", profile.phone)
-        profile.about = data.get("about", profile.about)
-        profile.save()
-        return JsonResponse({"message": "Profile updated successfully"})
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            current_password = serializer.validated_data['current_password']
+            new_password = serializer.validated_data['new_password']
 
-@csrf_exempt
-@login_required
-def upload_photo(request):
-    if request.method == 'POST' and request.FILES.get('photo'):
-        profile = Profile.objects.get(user=request.user)
-        profile.profile_photo = request.FILES['photo']
-        profile.save()
-        return JsonResponse({
-            'profilePhoto': profile.profile_photo.url
-        })
-    return JsonResponse({"error": "Failed to upload photo"}, status=400)
+            if not user.check_password(current_password):
+                return Response({"detail": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
 
+            user.set_password(new_password)
+            user.save()
+            return Response({"detail": "Password changed successfully"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

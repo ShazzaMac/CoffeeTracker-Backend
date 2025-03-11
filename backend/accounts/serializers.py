@@ -1,9 +1,12 @@
-# backend/accounts/serializers.py
-
+# accounts/serializers.py
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProfile
-        fields = ['phone', 'about', 'profile_photo']
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']  # Add more fields as needed
+
+class PasswordChangeSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)

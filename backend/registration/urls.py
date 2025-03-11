@@ -3,12 +3,10 @@
 # this file is used to map URLs to views.
 from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
-
+from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView)
+from .views import PriceSubmissionListView
 from . import views
-from .views import (DashboardView, ForgotPasswordView, LoginView,
-                    ProtectedEndpoint, ResetPasswordView, UserRegistrationView)
+from .views import (DashboardView, ForgotPasswordView, LoginView, ProtectedEndpoint, ResetPasswordView, UserRegistrationView)
 
 urlpatterns = [
     path("api/dashboard/", DashboardView.as_view(), name="dashboard"),
@@ -24,7 +22,6 @@ urlpatterns = [
     path("api-token-auth/", obtain_auth_token, name="login"),  # Ensure the path matches
     path("api/register/", UserRegistrationView.as_view(), name="register"),
     path("register/", UserRegistrationView.as_view(), name="register"),
-
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path(

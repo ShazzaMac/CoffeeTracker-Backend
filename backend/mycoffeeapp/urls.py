@@ -4,15 +4,9 @@ from django.conf import settings
 from .views import upload_file, save_extracted_data, results_data, results_page
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import get_csrf_token
-from .views import csrf_token  # Import the csrf_token view
-from .views import contact_form
+from .views import get_csrf_token, csrf_token, contact_form
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from fhrs.views import CoffeeShopListView
-
-
-
-
 from registration.views import (
     ForgotPasswordView,
     LoginView,
@@ -36,25 +30,26 @@ urlpatterns = [
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path("api/reset-password/<uid>/<token>/",ResetPasswordView.as_view(), name="reset-password"),
-    path("api/", include("fhrs.urls")),
+    
     path('api/upload/', upload_file, name='upload'),  
     path('api/save-extracted-data/', save_extracted_data, name='save_extracted_data'),
     path('api/results/', results_data, name='results'),
     path('results/', results_page, name='results_page'),
     path('accounts/', include('accounts.urls')),
     path('api/accounts/', include('accounts.urls')),  
-    path("api/", include("priceapp.urls")), 
     path("api/csrf/", get_csrf_token, name="get_csrf_token"), 
     path('api/csrf-token/', csrf_token, name='csrf_token'),  # Add this URL pattern
     path('api/submit-price/', include('priceapp.urls')),
-    path('api/prices/', include('priceapp.urls')),
-    path('accounts/', include('accounts.urls')),  # Adjust to the app name and path
+    path('api/prices/', include('priceapp.urls')),#keep this for teh price tracker app 
     path("api/contact/", contact_form, name="contact_form"),
     path('fhrs/', include('fhrs.urls')),
-     
-
-
+    path('api/fhrs/', include('fhrs.urls')),
+    path('api/cafes/', CoffeeShopListView.as_view(), name='api-cafes'),
+    path('api/price/', include('priceapp.urls')),
+    path('api/', include('api.ocrapp.urls')),    # OCR logic
 ]
+
+
 
 # Serve media files in development
 if settings.DEBUG:

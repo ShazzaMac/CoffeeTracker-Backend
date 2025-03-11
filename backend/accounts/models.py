@@ -1,17 +1,13 @@
-# backend/accounts/models.py
+# accounts/models.py
+from django.contrib.auth.models import User
 from django.db import models
-from django.contrib.auth.models import User # Import the User model from Django
 
 class UserProfile(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     email = models.EmailField(max_length=255, blank=True)
-    phone = models.CharField(max_length=15, blank=True)
-    about = models.TextField(blank=True)
-    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
-
+    
     class Meta:
-        app_label = 'accounts'  # Explicitly specify the app label if it's not in the default location
+        app_label = 'accounts'
     
     def __str__(self):
         return self.user.username
-
