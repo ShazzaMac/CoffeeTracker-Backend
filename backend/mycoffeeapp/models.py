@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 # This model represents a coffee shop in the database
 class Shop(models.Model):
@@ -53,4 +55,15 @@ class ContactMessage(models.Model):
     def __str__(self):
         return self.name
     
+    # This model is for the leaderboard which is used in priceguesser
+
+class Leaderboard(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to Django's User model
+    points = models.IntegerField()
+
+    class Meta:
+        ordering = ['-points']  # Highest scores first
+
+    def __str__(self):
+        return f"{self.user.username} - {self.points}"
 

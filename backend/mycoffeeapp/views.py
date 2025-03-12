@@ -18,6 +18,38 @@ from api.ocrapp.utils import extract_text, generate_json_ai
 from .models import ShopResult, ContactMessage
 from .models import ContactMessage
 logger = logging.getLogger(__name__)
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Leaderboard
+from .serializers import LeaderboardSerializer
+
+@api_view(['GET'])
+def leaderboard_list(request):
+    """Fetches the top 10 players sorted by highest score."""
+    top_players = Leaderboard.objects.order_by('-points')[:10]
+    serializer = LeaderboardSerializer(top_players, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([])  # for authentication use IsAuthenticated
+def update_leaderboard(request):
+    """Updates the leaderboard with the authenticated user's score."""
+    user = request.user
+    points = request.data.get('points')
+
+    if points is None:
+        return Response({"error": "Points are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Either create a new entry or update existing one (keeping highest score)
+    leaderboard_entry, created = Leaderboard.objects.get_or_create(user=user, defaults={'points': points})
+
+    if not created and points > leaderboard_entry.points:
+        leaderboard_entry.points = points
+        leaderboard_entry.save()
+
+    return Response(LeaderboardSerializer(leaderboard_entry).data, status=status.HTTP_201_CREATED)
+
 
 def csrf_token(request):
     return JsonResponse({'csrf_token': get_token(request)})

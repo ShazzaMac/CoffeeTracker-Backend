@@ -19,6 +19,9 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from django.urls import path
+from .views import leaderboard_list, update_leaderboard
+
 
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -30,7 +33,6 @@ urlpatterns = [
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path("api/reset-password/<uid>/<token>/",ResetPasswordView.as_view(), name="reset-password"),
-    
     path('api/upload/', upload_file, name='upload'),  
     path('api/save-extracted-data/', save_extracted_data, name='save_extracted_data'),
     path('api/results/', results_data, name='results'),
@@ -38,7 +40,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('api/accounts/', include('accounts.urls')),  
     path("api/csrf/", get_csrf_token, name="get_csrf_token"), 
-    path('api/csrf-token/', csrf_token, name='csrf_token'),  # Add this URL pattern
+    path('csrf-token/', csrf_token, name='csrf_token'), #leave this as is - adding api ruins it 
     path('api/submit-price/', include('priceapp.urls')),
     path('api/prices/', include('priceapp.urls')),#keep this for teh price tracker app 
     path("api/contact/", contact_form, name="contact_form"),
@@ -47,6 +49,9 @@ urlpatterns = [
     path('api/cafes/', CoffeeShopListView.as_view(), name='api-cafes'),
     path('api/price/', include('priceapp.urls')),
     path('api/', include('api.ocrapp.urls')),    # OCR logic
+    path('api/leaderboard/', leaderboard_list, name='leaderboard-list'),
+    path('api/update-leaderboard/', update_leaderboard, name='update-leaderboard'),
+
 ]
 
 
