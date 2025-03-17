@@ -27,33 +27,35 @@ from .serializers import LeaderboardSerializer
 @api_view(['GET'])
 def leaderboard_list(request):
     """Fetches the top 10 players sorted by highest score."""
-    top_players = Leaderboard.objects.order_by('-points')[:10]
+    top_players = Leaderboard.objects.order_by('-points','timestamp')[:10]
     serializer = LeaderboardSerializer(top_players, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([])  # for authentication use IsAuthenticated
+@permission_classes([IsAuthenticated])  
 def update_leaderboard(request):
-    """Updates the leaderboard with the authenticated user's score."""
+    """Save a new leaderboard entry each time a user submits a score."""
     user = request.user
     points = request.data.get('points')
 
     if points is None:
         return Response({"error": "Points are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Either create a new entry or update existing one (keeping highest score)
-    leaderboard_entry, created = Leaderboard.objects.get_or_create(user=user, defaults={'points': points})
+    # ✅ Instead of updating, always create a new leaderboard entry
+    new_entry = Leaderboard.objects.create(user=user, points=points)
 
-    if not created and points > leaderboard_entry.points:
-        leaderboard_entry.points = points
-        leaderboard_entry.save()
+    # ✅ Return the **full leaderboard** sorted by highest score
+    top_players = Leaderboard.objects.order_by('-points')[:10]
+    return Response(LeaderboardSerializer(top_players, many=True).data, status=status.HTTP_201_CREATED)
 
-    return Response(LeaderboardSerializer(leaderboard_entry).data, status=status.HTTP_201_CREATED)
-
-
+#upddated
+@api_view(['GET'])
 def csrf_token(request):
-    return JsonResponse({'csrf_token': get_token(request)})
-
+    """Return CSRF token explicitly allowing CORS (for frontend access)."""
+    response = JsonResponse({'csrf_token': get_token(request)})
+    response["Access-Control-Allow-Origin"] = "*"  # Remove in production; set allowed domains instead
+    response["Access-Control-Allow-Methods"] = "GET"
+    return response
 
 
 def contact_form(request):
@@ -77,9 +79,8 @@ def contact_form(request):
         if not name or not email or not message:
             return HttpResponseBadRequest("All fields are required.")
         
-        # Save the contact message to the database
-        contact_message = ContactMessage.objects.create(name=name, email=email, message=message)
-
+        #updated -- sends to db 
+        ContactMessage.objects.create(name=name, email=email, message=message)
         return JsonResponse({"success": "Message sent successfully!"}, status=201)
     
     return HttpResponseBadRequest("Invalid method.")
