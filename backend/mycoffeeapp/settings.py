@@ -36,8 +36,9 @@ INSTALLED_APPS = [
     "mycoffeeapp",
     "drf_spectacular",
     "accounts.apps.AccountsConfig",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
 
-    
 ]
 
 # Static files (CSS, JavaScript, Images) which are required for the project to work

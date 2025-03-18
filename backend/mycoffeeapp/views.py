@@ -188,3 +188,13 @@ def my_view(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 # +-----------------------------------------------------+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+        """Returns the authenticated user's details."""
+        user = request.user
+        return Response({
+            "username": user.username,
+            "email": user.email
+        })
+

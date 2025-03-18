@@ -21,9 +21,11 @@ from rest_framework_simplejwt.views import (
 )
 from django.urls import path
 from .views import leaderboard_list, update_leaderboard
-
+from django.urls import path
+from .views import user_profile
 
 urlpatterns = [
+    path('api/user/', user_profile, name='user-profile'),  # ✅ Add this
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
@@ -41,6 +43,7 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),  
     path("api/csrf/", get_csrf_token, name="get_csrf_token"), 
     path('csrf-token/', csrf_token, name='csrf_token'), #leave this as is - adding api ruins it 
+    path('api/csrf-token/', csrf_token, name='csrf_token'), #leave this as is - adding api ruins it
     path('api/submit-price/', include('priceapp.urls')),
     path('api/prices/', include('priceapp.urls')),#keep this for teh price tracker app 
     path("api/contact/", contact_form, name="contact_form"),

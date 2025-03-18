@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+
 # This model represents a coffee shop in the database
 class Shop(models.Model):
     name = models.CharField(max_length=255)
