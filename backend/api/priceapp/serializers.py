@@ -6,6 +6,6 @@ class PriceSubmissionSerializer(serializers.ModelSerializer):
         model = PriceSubmission
         fields = "__all__"
 
-def create(self, validated_data):
-    validated_data['submitter'] = self.context['request'].user
-    return super().create(validated_data)
+    def create(self, validated_data):
+        validated_data['submitter'] = self.context['request'].user
+        return super().create(validated_data)
