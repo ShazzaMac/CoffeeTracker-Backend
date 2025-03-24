@@ -71,6 +71,9 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
 
         if user:
+            # ✅ CREATE THE DRF TOKEN HERE -- currently using jwt 
+            #token, _ = Token.objects.get_or_create(user=user)
+
             tokens = get_tokens_for_user(user)
             logger.info(f"Login successful for user: {username}")
 
@@ -78,6 +81,7 @@ class LoginView(APIView):
                 {
                     "message": "Login successful",
                     "tokens": tokens,
+                   # "drf_token": token.key,
                     "username": user.username,
                 },
                 status=status.HTTP_200_OK,

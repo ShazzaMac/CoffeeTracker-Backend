@@ -81,6 +81,7 @@ urlpatterns = [
     path("fhrs/", include("fhrs.urls")),
     path("api/fhrs/", include("fhrs.urls")),
     path("api/cafes/", CoffeeShopListView.as_view(), name="api-cafes"),
+    path("shop-profile/", CoffeeShopListView.as_view(), name="shop-profile"),
 
     # for the Accounts App
     path("accounts/", include("accounts.urls")),
