@@ -155,6 +155,7 @@ class DashboardView(View):
     def get(self, request):
         return JsonResponse({"message": "Welcome to the dashboard!"})
 
+# APIView for coffee shop statistics -- consider moving to main folder 
 class CoffeeStatsAPIView(APIView):
     def get(self, request):
         total_shops = CoffeeShop.objects.count()

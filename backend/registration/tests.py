@@ -5,6 +5,10 @@ from registration.serializers import UserLoginSerializer, UserRegistrationSerial
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
+from django.core import mail
+from django.contrib.auth.models import User
+from mycoffeeapp.models import CoffeeShop
+
 
 User = get_user_model()
 
@@ -131,3 +135,74 @@ class UserRegistrationViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.data)
         self.assertEqual(response.data["error"], "Invalid credentials")
+
+class ForgotPasswordViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="forgotuser", email="forgot@example.com", password="testpass123")
+        self.url = reverse("forgot-password")  # Make sure this URL is set up correctly
+
+    def test_send_new_password_success(self):
+        response = self.client.post(self.url, {"email": "forgot@example.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("message", response.data)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Your new temporary password", mail.outbox[0].body)
+
+    def test_forgot_password_user_not_found(self):
+        response = self.client.post(self.url, {"email": "nonexistent@example.com"})
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("error", response.data)
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
+class ResetPasswordViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="resetuser", email="reset@example.com", password="oldpassword")
+        self.token = default_token_generator.make_token(self.user)
+        self.uid = self.user.pk
+        self.url = reverse("reset-password", kwargs={"uid": self.uid, "token": self.token})
+
+    def test_password_reset_successful(self):
+        response = self.client.post(self.url, {"password": "newpass123"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "Password reset successfully.")
+
+    def test_password_reset_invalid_token(self):
+        invalid_url = reverse("reset-password", kwargs={"uid": self.uid, "token": "invalidtoken"})
+        response = self.client.post(invalid_url, {"password": "newpass123"})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class ProtectedEndpointTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="protecteduser", password="testpass")
+        self.token = str(RefreshToken.for_user(self.user).access_token)
+        self.client = APIClient()
+        self.url = reverse("protected-endpoint")
+
+    def test_access_protected_with_auth(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["message"], "You have access!")
+
+    def test_access_protected_without_auth(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+
+class DashboardViewTest(TestCase):
+    def test_dashboard_access(self):
+        response = self.client.get(reverse("dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("message", response.json())
+
+def test_password_reset_missing_password(self):
+    response = self.client.post(self.url, {})
+    self.assertEqual(response.status_code, 400)
+    self.assertIn("error", response.json())

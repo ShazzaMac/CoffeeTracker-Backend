@@ -135,6 +135,9 @@ def save_extracted_data(request):
             extracted_data = data.get("extractedData", [])
             user_inputs = data.get("userInputs", {})
 
+            if not extracted_data:
+                return JsonResponse({"error": "No extracted data found"}, status=400)
+
             final_data = {
                 "extracted_data": extracted_data,
                 "user_inputs": user_inputs,

@@ -132,10 +132,15 @@ class UserRegistrationViewTestCase(TestCase):
         response = self.client.post(self.login_url, self.user_login_data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("token", response.data)
+        self.assertIn("access", response.data["tokens"])
+        self.assertIn("refresh", response.data["tokens"])
 
         # Ensure token exists
         user = User.objects.get(username="testuser")
         self.assertTrue(Token.objects.filter(user=user).exists())
+        self.assertEqual(response.data["message"], "Login successful")
+        self.assertEqual(response.data["username"], "testuser")
+
 
     def test_user_login_serializer_invalid_credentials(self):
         """Test login with incorrect password"""

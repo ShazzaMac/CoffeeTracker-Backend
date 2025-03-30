@@ -111,3 +111,64 @@ class PriceViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(len(response.data), 1)
+    
+    class PriceSubmissionViewExtraTests(TestCase):
+        def setUp(self):
+            self.client = APIClient()
+            self.url = "/api/submit-price/"
+            self.valid_data = {
+            "establishment": "Caffeine Corner",
+            "date": "2024-03-25",
+            "beverage": "Latte",
+            "price": "3.50",
+            "submitterName": "Test User",
+            "features": {
+                "dogFriendly": "true",
+                "wifi": "false",
+                "outdoorSeating": "true",
+                "plantMilks": "true",
+                "brunchLunch": "false",
+                "wheelchairAccess": "true"
+            },
+            "ratings": {
+                "coffeeTaste": 4,
+                "coffeeOptions": 5,
+                "service": 3,
+                "atmosphere": 4,
+                "valueForMoney": 4
+            }
+        }
+
+    def test_post_missing_formData_key(self):
+        # Simulate missing `formData` key in multipart request
+        response = self.client.post(self.url, data={}, content_type="multipart/form-data")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("formData is missing", response.data.get("error", ""))
+
+    def test_post_invalid_json_format(self):
+        # Invalid JSON string
+        response = self.client.post(self.url, data={"formData": "{invalid-json}"}, content_type="multipart/form-data")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Invalid form data JSON", response.data.get("error", ""))
+
+    def test_post_valid_data_with_file(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        file = SimpleUploadedFile("receipt.jpg", b"fake-content", content_type="image/jpeg")
+        payload = {
+            "formData": json.dumps(self.valid_data),
+            "file": file
+        }
+        response = self.client.post(self.url, data=payload)
+        self.assertEqual(response.status_code, 201)
+
+    def test_get_all_price_submissions(self):
+        # Ensure GET request works
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_str_to_bool_helper(self):
+        from priceapp.views import str_to_bool
+        self.assertTrue(str_to_bool("true"))
+        self.assertFalse(str_to_bool("false"))
+        self.assertTrue(str_to_bool(True))
+        self.assertFalse(str_to_bool(False))

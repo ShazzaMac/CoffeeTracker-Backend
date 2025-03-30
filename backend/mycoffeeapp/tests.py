@@ -1,5 +1,3 @@
-# This file is for unit tests for the main part of teh app and the game 
-
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -7,6 +5,7 @@ from mycoffeeapp.models import Shop, Review, PriceRecord, ContactMessage, ShopRe
 import json
 from rest_framework.test import APIClient
 from rest_framework import status
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class CoffeeAppModelTests(TestCase):
@@ -79,10 +78,39 @@ class CoffeeAppViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    def test_contact_form_get_method(self):
+        response = self.client.get("/api/contact/")
+        self.assertEqual(response.status_code, 400)
+
     def test_user_profile_authenticated(self):
         response = self.client.get("/api/user/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["username"], "user1")
 
+    def test_user_profile_unauthenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get("/api/user/")
+        self.assertEqual(response.status_code, 401)
 
+    def test_upload_file_invalid_type(self):
+        fake_file = SimpleUploadedFile("test.doc", b"content", content_type="text/plain")
+        response = self.client.post("/api/upload/", {"file": fake_file})
+        self.assertEqual(response.status_code, 400)
 
+    def test_save_extracted_data_missing_fields(self):
+        response = self.client.post("/api/save-extracted-data/", data=json.dumps({}), content_type="application/json")
+        self.assertIn(response.status_code, [400, 500])
+
+    def test_my_view_post_success(self):
+        response = self.client.post("/api/test-post/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_my_view_get_invalid(self):
+        response = self.client.get("/api/test-post/")
+        self.assertEqual(response.status_code, 400)
+
+    def test_alternative_csrf_token_routes(self):
+        for url in ["/csrf-token/", "/api/csrf-token/"]:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("csrf_token", response.json())

@@ -15,6 +15,7 @@ from .views import (
     leaderboard_list,
     update_leaderboard,
     user_profile,
+    my_view,  # Added my_view for testing
 )
 
 # FHRS + Registration
@@ -89,6 +90,10 @@ urlpatterns = [
 
     # to access Django Admin
     path("admin/", admin.site.urls),
+
+    # for testing purposes
+       path("api/test-post/", my_view, name="my_view_test"),  
+ 
 ]
 
 # Serves uploaded media in development
