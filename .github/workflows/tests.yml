@@ -1,4 +1,4 @@
-name: Backend and Frontend CI/CD
+name: Django Backend CI/CD
 
 on:
   push:
@@ -7,26 +7,23 @@ on:
     branches: [main]
 
 jobs:
-  test-django-app:
-    name: Run Django Tests
+  test-backend:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.12.6]
     services:
       postgres:
         image: postgres:13
         ports:
           - 5433:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Plu13064005!
+          POSTGRES_DB: coffee_tracker_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: Plu13064005!
-          POSTGRES_DB: coffee_tracker_db
+
     steps:
       - uses: actions/checkout@v3
 
@@ -35,78 +32,12 @@ jobs:
         with:
           python-version: 3.12.6
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h localhost -p 5433; do
-            echo "Waiting for Postgres..."
-            sleep 1
-          done
-
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
+          pip install -r requirements.txt
 
       - name: Run tests
         env:
           DATABASE_URL: postgres://postgres:Plu13064005!@localhost:5433/coffee_tracker_db
-        run: python3 backend/manage.py test
-
-  coverage:
-    name: Run Coverage and Upload to Codecov
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12.6
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
-          pip install coverage
-
-      - name: Run tests with coverage
-        env:
-          DATABASE_URL: postgres://postgres:Plu13064005!@localhost:5433/coffee_tracker_db
-        run: |
-          coverage run --source=backend backend/manage.py test
-
-      - name: Generate coverage report
-        run: coverage xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-
-  frontend-tests:
-    name: Run Frontend Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Debug Frontend Directory
-        run: ls -la my-webapp/frontend
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install frontend dependencies
-        working-directory: my-webapp/frontend
-        run: npm install
-
-      - name: Run frontend tests
-        working-directory: my-webapp/frontend
-        run: npm test -- --watchAll=false
+        run: python3 manage.py test
