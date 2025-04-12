@@ -1,4 +1,5 @@
-# Coffee Tracker Backend
+# Coffee Tracker App 
+FE and BE 
 
 --* still a work in progress  *--
 
