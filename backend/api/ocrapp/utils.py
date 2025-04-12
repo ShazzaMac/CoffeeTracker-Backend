@@ -5,6 +5,7 @@ import re
 import cv2
 import numpy as np
 from PIL import Image
+from pdf2image import convert_from_path
 import subprocess
 from dotenv import load_dotenv
 import google.generativeai as genai

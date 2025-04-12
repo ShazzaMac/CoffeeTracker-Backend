@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+
 
 # This model represents a coffee shop in the database
 class Shop(models.Model):
@@ -53,4 +56,18 @@ class ContactMessage(models.Model):
     def __str__(self):
         return self.name
     
+    # This model is for the leaderboard which is used in priceguesser
+from django.db import models
+from django.contrib.auth.models import User
+
+class Leaderboard(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)  # ✅ Save when entry is created
+
+    class Meta:
+        ordering = ['-points']  # Show highest scores first
+
+    def __str__(self):
+        return f"{self.user.username} - {self.points} - {self.timestamp}"
 

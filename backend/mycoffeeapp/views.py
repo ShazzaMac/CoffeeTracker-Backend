@@ -18,10 +18,44 @@ from api.ocrapp.utils import extract_text, generate_json_ai
 from .models import ShopResult, ContactMessage
 from .models import ContactMessage
 logger = logging.getLogger(__name__)
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Leaderboard
+from .serializers import LeaderboardSerializer
 
+@api_view(['GET'])
+def leaderboard_list(request):
+    """Fetches the top 10 players sorted by highest score."""
+    top_players = Leaderboard.objects.order_by('-points','timestamp')[:10]
+    serializer = LeaderboardSerializer(top_players, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  
+def update_leaderboard(request):
+    """Save a new leaderboard entry each time a user submits a score."""
+    user = request.user
+    points = request.data.get('points')
+
+    if points is None:
+        return Response({"error": "Points are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # ✅ Instead of updating, always create a new leaderboard entry
+    new_entry = Leaderboard.objects.create(user=user, points=points)
+
+    # ✅ Return the **full leaderboard** sorted by highest score
+    top_players = Leaderboard.objects.order_by('-points')[:10]
+    return Response(LeaderboardSerializer(top_players, many=True).data, status=status.HTTP_201_CREATED)
+
+#upddated
+@api_view(['GET'])
 def csrf_token(request):
-    return JsonResponse({'csrf_token': get_token(request)})
-
+    """Return CSRF token explicitly allowing CORS (for frontend access)."""
+    response = JsonResponse({'csrf_token': get_token(request)})
+    response["Access-Control-Allow-Origin"] = "*"  # Remove in production; set allowed domains instead
+    response["Access-Control-Allow-Methods"] = "GET"
+    return response
 
 
 def contact_form(request):
@@ -45,9 +79,8 @@ def contact_form(request):
         if not name or not email or not message:
             return HttpResponseBadRequest("All fields are required.")
         
-        # Save the contact message to the database
-        contact_message = ContactMessage.objects.create(name=name, email=email, message=message)
-
+        #updated -- sends to db 
+        ContactMessage.objects.create(name=name, email=email, message=message)
         return JsonResponse({"success": "Message sent successfully!"}, status=201)
     
     return HttpResponseBadRequest("Invalid method.")
@@ -102,6 +135,9 @@ def save_extracted_data(request):
             extracted_data = data.get("extractedData", [])
             user_inputs = data.get("userInputs", {})
 
+            if not extracted_data:
+                return JsonResponse({"error": "No extracted data found"}, status=400)
+
             final_data = {
                 "extracted_data": extracted_data,
                 "user_inputs": user_inputs,
@@ -155,3 +191,13 @@ def my_view(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 # +-----------------------------------------------------+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+        """Returns the authenticated user's details."""
+        user = request.user
+        return Response({
+            "username": user.username,
+            "email": user.email
+        })
+

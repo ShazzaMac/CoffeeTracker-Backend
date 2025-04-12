@@ -6,7 +6,13 @@ class PriceSubmission(models.Model):
     beverage = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=4, decimal_places=2)
     submitter_name = models.CharField(max_length=255)
+    verified = models.BooleanField(default=False)
     
+    def save(self, *args, **kwargs):
+        if self.beverage:
+            self.beverage = self.beverage.strip().title()  # Converts "latte" -> "Latte"
+        super().save(*args, **kwargs)
+
     # Features as Boolean Fields
     dog_friendly = models.BooleanField(default=False)
     wifi = models.BooleanField(default=False)

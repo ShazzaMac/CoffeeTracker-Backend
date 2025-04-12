@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserProfileSerializer, PasswordChangeSerializer
 
+
 class ProfileUpdateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -38,3 +39,4 @@ class PasswordChangeView(APIView):
             user.save()
             return Response({"detail": "Password changed successfully"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

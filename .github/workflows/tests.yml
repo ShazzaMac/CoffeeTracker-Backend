@@ -2,17 +2,14 @@ name: Backend and Frontend CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  # Job to test the Django backend
   test-django-app:
     name: Run Django Tests
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.12.6]
@@ -31,23 +28,19 @@ jobs:
           POSTGRES_PASSWORD: Plu13064005!
           POSTGRES_DB: coffee_tracker_db
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-
-      - name: Debug DATABASE_URL
-        run: echo "DATABASE_URL=${DATABASE_URL}"
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..30}; do
-            nc -zv localhost 5433 && break || sleep 1
-          done
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12.6
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5433; do
+            echo "Waiting for Postgres..."
+            sleep 1
+          done
 
       - name: Install dependencies
         run: |
@@ -56,16 +49,14 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://postgres:Plu13064005!@localhost:5432/coffee_tracker_db
+          DATABASE_URL: postgres://postgres:Plu13064005!@localhost:5433/coffee_tracker_db
         run: python3 backend/manage.py test
 
-  # Job to measure test coverage and upload results
   coverage:
     name: Run Coverage and Upload to Codecov
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -76,11 +67,13 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-          pip install coverage  # ✅ Ensure coverage is installed
+          pip install coverage
 
       - name: Run tests with coverage
+        env:
+          DATABASE_URL: postgres://postgres:Plu13064005!@localhost:5433/coffee_tracker_db
         run: |
-          coverage run --source=backend backend/manage.py test  # ✅ This will now work
+          coverage run --source=backend backend/manage.py test
 
       - name: Generate coverage report
         run: coverage xml
@@ -93,17 +86,14 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
-  
-  # Job to test the React frontend
+
   frontend-tests:
     name: Run Frontend Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Ensures all files are checked out
-
+          fetch-depth: 0
 
       - name: Debug Frontend Directory
         run: ls -la my-webapp/frontend
@@ -118,5 +108,5 @@ jobs:
         run: npm install
 
       - name: Run frontend tests
-        working-directory: mywebapp/frontend
+        working-directory: my-webapp/frontend
         run: npm test -- --watchAll=false

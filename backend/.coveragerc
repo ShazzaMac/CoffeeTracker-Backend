@@ -1,0 +1,17 @@
+[run]
+source = mycoffeeapp,priceapp,api,registration,fhrs,accounts
+
+omit =
+    */migrations/*
+    */tests.py
+    */venv/*
+    */myenv/*
+    manage.py
+    */config.py
+    */api/registration/*
+
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
