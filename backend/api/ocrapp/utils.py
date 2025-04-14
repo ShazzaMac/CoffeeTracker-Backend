@@ -52,9 +52,9 @@ def preprocess_image(image_path):
     cv2.imwrite(temp_path, processed)
 
     if not os.path.exists(temp_path):
-        print(f"❌ ERROR: Processed image did not save at {temp_path}")
+        print(f" ERROR: Processed image did not save at {temp_path}")
     else:
-        print(f"✅ Processed Image Saved: {temp_path}")
+        print(f" Processed Image Saved: {temp_path}")
 
     return temp_path
 

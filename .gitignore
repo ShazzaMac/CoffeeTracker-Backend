@@ -1,31 +1,19 @@
-# Ignore the Python bytecode cache folder
-__pycache__/
 
 # Ignore Django migration files
 *.pyc
+*.pyc
 *.pyo
 *.pyd
-
-# Ignore Django's SQLite database file
-db.sqlite3
-
 # Ignore media folder (uploads from users)
 /media/
-
-# Ignore static files if they are not managed by Django's collectstatic command
 /static/
-
-# Ignore virtual environment
 venv/
-myenv/
+# Ignore node_modules folder
 node_modules
-
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
 /.pnp
-.pnp.js
 
 # testing
 /coverage
@@ -35,10 +23,13 @@ node_modules
 
 # misc
 .DS_Store
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env
+.env.local
+.env.development
+.env.test
 
 npm-debug.log*
 yarn-debug.log*

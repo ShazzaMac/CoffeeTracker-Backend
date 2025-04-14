@@ -1,8 +1,12 @@
-#!/bin/bash
+#---------------------------------------------------------------
+# This script sets up both the frontend and backend of the app without having to do it separately
+# To use type in ./start_project.sh in the terminal
+#---------------------------------------------------------------
+
 
 # Navigate to backend and activate virtual environment
 cd backend
-source myenv/bin/activate  # Activate the virtual environment
+source myenv/bin/activate  # Activates the virtual environment
 
 # Start Django server
 python3 manage.py runserver &  # Run in background
