@@ -65,7 +65,7 @@ const Profile = () => {
         }
     };
 
-    fetchProfileData(); // ✅ Now correctly calls the function
+    fetchProfileData(); // Now correctly calls the function
 }, [token]);
 
 //-----------------------------------Upload photo function-----------------------------------
@@ -105,7 +105,7 @@ const uploadPhoto = async () => {
   }
 
   const photoData = new FormData();
-  photoData.append("photo", profilePhoto); // Make sure you're appending the file, not URL
+  photoData.append("photo", profilePhoto); // Make sure appending the file, not URL
 
   try {
     const response = await fetch("http://localhost:8000/api/accounts/profile/upload-photo/", {

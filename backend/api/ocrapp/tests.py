@@ -10,6 +10,7 @@ from unittest.mock import patch, MagicMock
 from api.ocrapp import utils
 import numpy as np
 
+
 class OCRUtilsTests(unittest.TestCase):
 
     def test_allowed_file_valid(self):
@@ -65,7 +66,9 @@ class OCRUtilsTests(unittest.TestCase):
     @patch("cv2.filter2D")
     @patch("cv2.imwrite")
     @patch("os.path.exists", return_value=True)
-    def test_preprocess_image_saves_file(self, mock_exists, mock_imwrite, mock_filter2D, mock_imread):
+    def test_preprocess_image_saves_file(
+        self, mock_exists, mock_imwrite, mock_filter2D, mock_imread
+    ):
         mock_imread.return_value = MagicMock()
         mock_filter2D.return_value = MagicMock()
         result = utils.preprocess_image("sample.jpg")
@@ -75,7 +78,9 @@ class OCRUtilsTests(unittest.TestCase):
     @patch("cv2.filter2D", return_value=np.zeros((100, 100), dtype=np.uint8))
     @patch("cv2.imwrite", return_value=False)
     @patch("os.path.exists", return_value=False)
-    def test_preprocess_image_save_failure(self, mock_exists, mock_imwrite, mock_filter2D, mock_imread):
+    def test_preprocess_image_save_failure(
+        self, mock_exists, mock_imwrite, mock_filter2D, mock_imread
+    ):
         result = utils.preprocess_image("fail_save.jpg")
         self.assertIn("_preprocessed.png", result)
 
@@ -103,7 +108,9 @@ class OCRUtilsTests(unittest.TestCase):
     @patch("api.ocrapp.utils.genai.GenerativeModel")
     @patch("api.ocrapp.utils.genai.configure")
     @patch("os.getenv", return_value="fake-key")
-    def test_generate_json_ai_success(self, mock_getenv, mock_configure, mock_model_class):
+    def test_generate_json_ai_success(
+        self, mock_getenv, mock_configure, mock_model_class
+    ):
         mock_model = MagicMock()
         mock_response = MagicMock()
         mock_response.text = '{"establishment": "Cafe", "total_price": "3.00"}'
@@ -116,25 +123,28 @@ class OCRUtilsTests(unittest.TestCase):
     @patch("api.ocrapp.utils.genai.GenerativeModel")
     @patch("api.ocrapp.utils.genai.configure")
     @patch("os.getenv", return_value="fake-key")
-    def test_generate_json_ai_invalid_json(self, mock_getenv, mock_configure, mock_model_class):
+    def test_generate_json_ai_invalid_json(
+        self, mock_getenv, mock_configure, mock_model_class
+    ):
         mock_model = MagicMock()
         mock_response = MagicMock()
-        mock_response.text = 'Invalid response'
+        mock_response.text = "Invalid response"
         mock_model.generate_content.return_value = mock_response
         mock_model_class.return_value = mock_model
 
         result = utils.generate_json_ai("Latte 3.00\nTotal: 3.00")
         self.assertIn("error", result)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
+
 
 class OCRExtractEndpointTest(TestCase):
     def test_no_file_uploaded_returns_error(self):
         """
         Ensure the /ocr-extract/ endpoint returns 400 if no file is uploaded.
         """
-        response = self.client.post('/api/ocr-extract/')
+        response = self.client.post("/api/ocr-extract/")
         self.assertEqual(response.status_code, 400)
-        self.assertIn('error', response.json())
-
+        self.assertIn("error", response.json())
