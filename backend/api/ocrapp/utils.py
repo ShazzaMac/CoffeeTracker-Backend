@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import easyocr
 
+
 # Load environment variables (for Gemini API to work)
 load_dotenv()
 
