@@ -1,5 +1,10 @@
-# This file is used to register the models in the admin panel. To do this,
-# you need to import the models and register them using the admin.site.register() method.
+# ------------------------------------------
+# This file is used to register any models in the app with the 
+# Django admin site, allowing them to be managed through the admin interface.
+# This was originally intended to be set up to manage the ContactMessage model,
+# which is used to store messages sent by users through the contact form.
+# ------------------------------------------
+
 from django.contrib import admin
 from mycoffeeapp.models import ContactMessage
 

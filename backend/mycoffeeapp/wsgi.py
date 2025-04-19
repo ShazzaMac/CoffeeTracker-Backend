@@ -1,3 +1,9 @@
+#   ---------------------------------------------------------------------
+# This is a Web Server Gateway Interface (WSGI) configuration file for a Django project.
+# It sets up the WSGI application for the project, which is used to serve the application
+# through a WSGI server. The WSGI application is the entry point for the web server to communicate with the Django application.
+# ---------------------------------------------------------------------
+
 """
 WSGI config for backend project.
 

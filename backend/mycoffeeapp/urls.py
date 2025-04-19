@@ -55,7 +55,7 @@ urlpatterns = [
     # Price form  & Tracker
     path("api/submit-price/", include("priceapp.urls")),
     path("api/prices/", include("priceapp.urls")),
-    path("api/price/", include("priceapp.urls")),  # You might consolidate this later
+    path("api/price/", include("priceapp.urls")),  # May wish to consolidate these 3 later
 
     # OCR Logic for price form
     path("api/", include("api.ocrapp.urls")),
@@ -89,7 +89,7 @@ urlpatterns = [
     path("api/accounts/", include("accounts.urls")),
 
     # to access Django Admin
-    path("admin/", admin.site.urls),
+   # path("admin/", admin.site.urls),
 
     # for testing purposes
        path("api/test-post/", my_view, name="my_view_test"),  

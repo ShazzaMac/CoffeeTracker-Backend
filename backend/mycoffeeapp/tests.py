@@ -1,7 +1,14 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
-from mycoffeeapp.models import Shop, Review, PriceRecord, ContactMessage, ShopResult, Leaderboard
+from mycoffeeapp.models import (
+    Shop,
+    Review,
+    PriceRecord,
+    ContactMessage,
+    ShopResult,
+    Leaderboard,
+)
 import json
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -10,25 +17,52 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 class CoffeeAppModelTests(TestCase):
     def test_shop_str(self):
-        shop = Shop.objects.create(name="Café Bliss", address="123 Main St", website="https://example.com", social_media="https://instagram.com/example")
+        shop = Shop.objects.create(
+            name="Café Bliss",
+            address="123 Main St",
+            website="https://example.com",
+            social_media="https://instagram.com/example",
+        )
         self.assertEqual(str(shop), "Café Bliss")
 
     def test_review_str(self):
-        shop = Shop.objects.create(name="Café Bliss", address="123 Main St", website="https://example.com", social_media="https://instagram.com/example")
-        review = Review.objects.create(shop=shop, user="Alice", rating=5, comment="Excellent!")
+        shop = Shop.objects.create(
+            name="Café Bliss",
+            address="123 Main St",
+            website="https://example.com",
+            social_media="https://instagram.com/example",
+        )
+        review = Review.objects.create(
+            shop=shop, user="Alice", rating=5, comment="Excellent!"
+        )
         self.assertEqual(str(review), "Alice - Café Bliss")
 
     def test_price_record_str(self):
-        shop = Shop.objects.create(name="Beanery", address="456 High St", website="https://beanery.com", social_media="https://facebook.com/beanery")
-        record = PriceRecord.objects.create(shop=shop, date="2024-03-01", beverage="Latte", price=3.20, submitter_name="Bob", features={}, ratings={})
+        shop = Shop.objects.create(
+            name="Beanery",
+            address="456 High St",
+            website="https://beanery.com",
+            social_media="https://facebook.com/beanery",
+        )
+        record = PriceRecord.objects.create(
+            shop=shop,
+            date="2024-03-01",
+            beverage="Latte",
+            price=3.20,
+            submitter_name="Bob",
+            features={},
+            ratings={},
+        )
         self.assertIn("Latte - Beanery", str(record))
 
     def test_contact_message_str(self):
-        msg = ContactMessage.objects.create(name="Charlie", email="charlie@example.com", message="Hello!")
+        msg = ContactMessage.objects.create(
+            name="Charlie", email="charlie@example.com", message="Hello!"
+        )
         self.assertEqual(str(msg), "Charlie")
 
     def test_shop_result_str(self):
-        result = ShopResult.objects.create(json_data="{\"data\": true}")
+        result = ShopResult.objects.create(json_data='{"data": true}')
         self.assertIn("ShopResult", str(result))
 
     def test_leaderboard_str(self):
@@ -50,7 +84,9 @@ class CoffeeAppViewTests(TestCase):
         self.assertIn("username", response.json()[0])
 
     def test_update_leaderboard_success(self):
-        response = self.client.post("/api/update-leaderboard/", {"points": 50}, format="json")
+        response = self.client.post(
+            "/api/update-leaderboard/", {"points": 50}, format="json"
+        )
         self.assertEqual(response.status_code, 201)
 
     def test_update_leaderboard_missing_points(self):
@@ -65,8 +101,10 @@ class CoffeeAppViewTests(TestCase):
     def test_contact_form_success(self):
         response = self.client.post(
             "/api/contact/",
-            data=json.dumps({"name": "Alice", "email": "alice@example.com", "message": "Hi there"}),
-            content_type="application/json"
+            data=json.dumps(
+                {"name": "Alice", "email": "alice@example.com", "message": "Hi there"}
+            ),
+            content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
 
@@ -74,7 +112,7 @@ class CoffeeAppViewTests(TestCase):
         response = self.client.post(
             "/api/contact/",
             data=json.dumps({"name": "", "email": "test@example.com", "message": ""}),
-            content_type="application/json"
+            content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
 
@@ -93,12 +131,18 @@ class CoffeeAppViewTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_upload_file_invalid_type(self):
-        fake_file = SimpleUploadedFile("test.doc", b"content", content_type="text/plain")
+        fake_file = SimpleUploadedFile(
+            "test.doc", b"content", content_type="text/plain"
+        )
         response = self.client.post("/api/upload/", {"file": fake_file})
         self.assertEqual(response.status_code, 400)
 
     def test_save_extracted_data_missing_fields(self):
-        response = self.client.post("/api/save-extracted-data/", data=json.dumps({}), content_type="application/json")
+        response = self.client.post(
+            "/api/save-extracted-data/",
+            data=json.dumps({}),
+            content_type="application/json",
+        )
         self.assertIn(response.status_code, [400, 500])
 
     def test_my_view_post_success(self):
