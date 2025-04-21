@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 #                    LEADERBOARD VIEWS
 # +-----------------------------------------------------+
 
+
 @api_view(["GET"])
 def leaderboard_list(request):
     """Fetches the top 10 players sorted by highest score."""
@@ -61,9 +62,11 @@ def update_leaderboard(request):
         status=status.HTTP_201_CREATED,
     )
 
+
 # +-----------------------------------------------------+
 #                    CSRF TOKEN VIEWS
 # +-----------------------------------------------------+
+
 
 # upddated
 @api_view(["GET"])
@@ -76,6 +79,7 @@ def csrf_token(request):
     response["Access-Control-Allow-Methods"] = "GET"
     return response
 
+
 def get_csrf_token(request):
     """Get CSRF token for frontend."""
     if request.method == "GET":
@@ -83,9 +87,11 @@ def get_csrf_token(request):
         return JsonResponse({"csrfToken": token})
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+
 # +-----------------------------------------------------+
 #                    CONTACT FORM VIEWS
 # +-----------------------------------------------------+
+
 
 def contact_form(request):
     if request.method == "POST":
@@ -180,13 +186,16 @@ def save_extracted_data(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+
 # +-----------------------------------------------------+
 #                    RESULTS VIEWS
 # +-----------------------------------------------------+
 
+
 def results_page(request):
     """Render results page."""
     return render(request, "results.html")
+
 
 def index(request):
     """Render the base.html template."""
@@ -202,6 +211,7 @@ def results_data(request):
         cursor.execute("SELECT json_data FROM shop_res")
         results = [row[0] for row in cursor.fetchall()]
     return JsonResponse({"results": results})
+
 
 # +-----------------------------------------------------+
 #                    CSRF TOKEN DEBUGGING
@@ -226,6 +236,7 @@ def your_view(request):
 # |   # REMOVE this in production (only for testing)    |
 # +-----------------------------------------------------+
 
+
 def my_view(request):
     if request.method == "POST":
         return JsonResponse({"message": "POST request successful"})
@@ -243,6 +254,7 @@ def user_profile(request):
     """Returns the authenticated user's details."""
     user = request.user
     return Response({"username": user.username, "email": user.email})
+
 
 class MyProtectedView(APIView):
     authentication_classes = [JWTAuthentication]

@@ -1,5 +1,7 @@
-# this file is used to configure the app by defining the app configuration class.
+# ------------------------------------------------------------------
+# #  this file is used to configure the app by defining the app configuration class.
 # This class is used to define metadata for the app such as the app name and other configurations.
+# ------------------------------------------------------------------
 from django.apps import AppConfig
 
 

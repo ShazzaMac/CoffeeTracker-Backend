@@ -1,8 +1,13 @@
+# ------------------------------------------
+# This file contains the models for the Django application.
+# It includes models for coffee shops, reviews, price records, and contact messages.
+# ------------------------------------------
+
 from django.db import models
 from django.contrib.auth.models import User
 
 
-# This model represents a coffee shop in the database
+# This model represents a coffee shop in the database - not yet in use
 class Shop(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
@@ -28,8 +33,7 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.user} - {self.shop.name}"
 
-
-# This model represents a price record for a coffee shop
+    # This model represents a price record for a coffee shop - used in the coffee tracker table
 class PriceRecord(models.Model):
     shop = models.ForeignKey(
         Shop, related_name="price_records", on_delete=models.CASCADE
@@ -53,7 +57,7 @@ class ShopResult(models.Model):
         return f"ShopResult {self.id}"
 
 
-# This model represents a contact message sent by a user
+# This model represents a contact message sent by a user - about page
 class ContactMessage(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
@@ -65,14 +69,13 @@ class ContactMessage(models.Model):
 
 
 
-from django.db import models
-from django.contrib.auth.models import User
-
-
+# This model represents a leaderboard entry for the price guessing game
 class Leaderboard(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     points = models.IntegerField()
-    timestamp = models.DateTimeField(auto_now_add=True)  # Saves when entry is created
+    timestamp = models.DateTimeField(
+        auto_now_add=True
+    )  # Saves when entry is created but this is only viewable in the db
 
     class Meta:
         ordering = ["-points"]  # Shows highest scores first

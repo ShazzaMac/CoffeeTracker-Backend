@@ -1,5 +1,10 @@
-# Create your models here.
+# ------------------------------------------------------------------
+# Django model for storing business information from the Food Hygiene Rating Scheme (FHRS)
+# This data can then be used in the application to display information about locations and ratings
+# ------------------------------------------------------------------
+
 from django.db import models
+
 
 class Business(models.Model):
     fhrs_id = models.IntegerField(unique=True)

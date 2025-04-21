@@ -1,6 +1,8 @@
+# ------------------------------------------
 # this is an Asynchronous server gateway interface (ASGI) 
 # configuration file for a Django project that is included in the backend directory.
 # It sets up the ASGI application for the project, which is used to handle asynchronous requests.
+# ------------------------------------------
 
 """
 ASGI config for backend project.

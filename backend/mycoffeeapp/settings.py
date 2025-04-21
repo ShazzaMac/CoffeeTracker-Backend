@@ -1,3 +1,9 @@
+#-------------------------------------------------------------------------------
+# This is the settingsfile for the whole project
+# It is divided into sections for easy navigation
+#-------------------------------------------------------------------------------
+
+
 import os
 import sys
 from pathlib import Path

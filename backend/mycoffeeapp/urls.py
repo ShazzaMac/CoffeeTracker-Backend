@@ -1,3 +1,8 @@
+#-------------------------------------------------------------------------------
+# This is the url config for the whole project
+# This file is responsible for routing requests to the appropriate views and applications
+#-------------------------------------------------------------------------------
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings

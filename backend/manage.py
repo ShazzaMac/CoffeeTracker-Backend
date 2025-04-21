@@ -1,11 +1,15 @@
-# Description: This file is the entry point for the Django project.
+# +-----------------------------------------------------+
+#This file is the entry point for the Django project.
 # It is used to run administrative tasks like starting the development server
 # and running database migrations.
+# +-----------------------------------------------------+
+
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
 
-
+#everything is managed in coffeeapp/settings.py
+# +-----------------------------------------------------+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mycoffeeapp.settings")

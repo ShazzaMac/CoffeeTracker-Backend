@@ -1,6 +1,14 @@
+# ------------------------------------------
+# This file contains forms for manual entry and OCR upload of price data.
+# It uses Django's forms library to create forms for user input.
+# It includes a form for manual entry of price data and a form for uploading documents
+# and OCR text.
+# ------------------------------------------
+
 from django import forms
 from .models import PriceEntry
-from .utils import allowed_file  
+from .utils import allowed_file
+
 
 # form not tied to a model - for manual entry
 # This form is used for manual entry of price data
@@ -11,10 +19,13 @@ class PriceForm(forms.Form):
     price = forms.DecimalField(max_digits=6, decimal_places=2)
     submitter_name = forms.CharField(max_length=100)
 
+
 # form for OCR uploads
 class PriceEntryForm(forms.ModelForm):
     document = forms.FileField(label="Upload Document", required=False)
-    ocr_text = forms.CharField(widget=forms.Textarea, required=False, label="OCR Extracted Text (Editable)")
+    ocr_text = forms.CharField(
+        widget=forms.Textarea, required=False, label="OCR Extracted Text (Editable)"
+    )
 
     class Meta:
         model = PriceEntry

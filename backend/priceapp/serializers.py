@@ -1,12 +1,13 @@
+#--------------------------------------------------------------------------------
+# PriceSubmission Serializer 
+#--------------------------------------------------------------------------------
+
 from rest_framework import serializers
 from .models import PriceSubmission
 
 class PriceSubmissionSerializer(serializers.ModelSerializer):
-    # Rename submitter_name to submitterName
     submitterName = serializers.CharField(source="submitter_name")
-    # Nest the ratings fields into one object
     ratings = serializers.SerializerMethodField()
-    # Nest the feature fields into one object
     features = serializers.SerializerMethodField()
     
     class Meta:
@@ -20,9 +21,12 @@ class PriceSubmissionSerializer(serializers.ModelSerializer):
             'submitterName',
             'ratings',
             'features',
-            'receipt',  # Add receipt field to the serializer
+            'receipt', 
         ]
     
+    # This method is used to convert the ratings field into a JSON object
+    # It takes the ratings from the model and converts them into a dictionary
+    # with the keys being the rating names and the values being the rating values
     def get_ratings(self, obj):
         return {
             "coffeeTaste": obj.coffee_taste,

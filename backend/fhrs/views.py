@@ -1,3 +1,7 @@
+# --------------------------------------------------------
+# this file contains the views for the Food Hygiene Rating data used in the application
+# --------------------------------------------------------
+
 from django.db.models import Q
 from rest_framework import generics
 
@@ -13,12 +17,12 @@ class CoffeeShopListView(generics.ListAPIView):
             Q(business_type__icontains="cafe") | Q(business_type__icontains="coffee")
         )
 
-        # Get query parameters from the URL
+        # Gets the query parameters from the URL
         rating = self.request.query_params.get("rating", None)
         postcode = self.request.query_params.get("postcode", None)
         name = self.request.query_params.get("name", None)
 
-        # Apply filters based on the query parameters
+        # Applies filters based on the query parameters
         if rating:
             queryset = queryset.filter(rating=rating)
         if postcode:
