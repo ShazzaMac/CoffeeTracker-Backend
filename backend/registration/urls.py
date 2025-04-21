@@ -1,12 +1,20 @@
+# --------------------------------------------------------------------------------
 # this file is used to define the URL patterns for the registration app
-# which will be used to access the registration views. In simple terms,
-# this file is used to map URLs to views.
+# which will be used to access the registration views.
+# --------------------------------------------------------------------------------
 from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import PriceSubmissionListView
 from . import views
-from .views import (DashboardView, ForgotPasswordView, LoginView, ProtectedEndpoint, ResetPasswordView, UserRegistrationView)
+from .views import (
+    DashboardView,
+    ForgotPasswordView,
+    LoginView,
+    ProtectedEndpoint,
+    ResetPasswordView,
+    UserRegistrationView,
+)
 
 urlpatterns = [
     path("api/dashboard/", DashboardView.as_view(), name="dashboard"),
@@ -19,7 +27,7 @@ urlpatterns = [
         "api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"
     ),  # trying JWT (JSON Web Tokens) Authentication
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api-token-auth/", obtain_auth_token, name="login"),  # Ensure the path matches
+    path("api-token-auth/", obtain_auth_token, name="login"),
     path("api/register/", UserRegistrationView.as_view(), name="register"),
     path("register/", UserRegistrationView.as_view(), name="register"),
     path("api/login/", LoginView.as_view(), name="login"),

@@ -1,81 +1,55 @@
-# Coffee Tracker Backend
+Project: Coffee Tracker
+-------------------------------------------------------------------
 
---* still a work in progress  *--
+Welcome to Cortado | The Coffee Tracker 
+ — this is a full-stack web application to help users track, compare, and contribute data on coffee prices across cafes, powered by OCR technology and user submissions. It also makes use of open APIs to build a map and showcase user's favourite spots.
+-------------------------------------------------------------------
 
-This is my final major project for Queens University Belfast.  Coffee Tracker is a web application that allows users to track their coffee consumption. It includes features for logging daily intake, viewing consumption history, and setting personal goals.
+✨ Architecture Overview ✨
 
-## Installation
+ - Frontend: React (JavaScript)
+ - Backend: Django REST Framework (Python)
+ - Database: PostgreSQLCommunication: 
+ - Axios (HTTP requests from frontend to backend)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/YourUsername/CoffeeTracker-Backend.git
-   ```
+ - Users interact via a modern React interface, while Django handles all backend logic and database operations.
+-------------------------------------------------------------------
 
-2. Navigate to the project directory:
-   ```bash
-   cd CoffeeTracker-Backend
-   ```
+✨ Key Features ✨
 
-3. Create a virtual environment (optional but recommended):
-   ```bash
-   python3 -m venv venv
-   ```
+ - Submit and view coffee prices
 
-4. Activate the virtual environment:
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-   - On Windows:
-     ```bash
-     venv\Scripts\activate
-     ```
+ - Upload receipts and extract data with OCR
 
-5. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+ - Search and filter cafes by postcode, rating, and name
 
-6. Run the application:
-   ```bash
-   python manage.py runserver
-   ```
+ - Visualize data with charts and leaderboards
 
-Your application should now be running at `http://127.0.0.1:8000/`.
+ - Contact form with email delivery and admin storage
 
-## Usage
+-------------------------------------------------------------------
 
-To log a new coffee intake, send a `POST` request to:
-POST /api/coffee/log
+✨ How It Works ✨
 
-with the following body:
-```json
-{
-  "amount": 250,
-  "type": "Espresso",
-  "date": "2025-01-21"
-}
+ - React handles the user interface
 
+ - Axios sends data and fetches results via API endpoints
 
-### 5. **Contributing**
-- others can contribute to the project, whether through opening issues, submitting pull requests, or contributing code.
+ - Django validates, processes, and stores the data
 
-Example:
-```markdown
-## Contributing
+ - PostgreSQL (PGadmin4) keeps the backend data safe and queryable
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes.
-4. Commit your changes (`git commit -am 'Add new feature'`).
-5. Push to your branch (`git push origin feature-branch`).
-6. Open a pull request.
+-------------------------------------------------------------------
 
-## License
+✨ Repository Structure ✨
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+my-webapp/
+├── frontend/       # React framework (client)
+├── backend/        # Django framework (API + database)
 
-## Acknowledgements
+-------------------------------------------------------------------
 
-- Thanks to Django for the web framework.
-- Thanks to Python for the great language!
+✨ Deployment ✨
+
+The app is CI/CD-ready via GitHub Actions and can be deployed using any suitable deployment services or can be developed further.
+

@@ -1,4 +1,8 @@
-# run_tests.py
+# +-----------------------------------------------------+
+# This script is used to run all the tests in the project and generate a report.
+# It uses the unittest framework and HtmlTestRunner to create an HTML report of the test results.
+# +-----------------------------------------------------+
+
 import unittest
 import HtmlTestRunner
 

@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------
+# This file defines the models for the price app.
+# It includes the PriceSubmission model which is used to store information about price submissions.
+# ------------------------------------------------------------------
+
 from django.db import models
 
 class PriceSubmission(models.Model):
@@ -13,7 +18,7 @@ class PriceSubmission(models.Model):
             self.beverage = self.beverage.strip().title()  # Converts "latte" -> "Latte"
         super().save(*args, **kwargs)
 
-    # Features as Boolean Fields
+    # Features as Boolean Fields so they can be used in the frontend as checkboxes
     dog_friendly = models.BooleanField(default=False)
     wifi = models.BooleanField(default=False)
     outdoor_seating = models.BooleanField(default=False)
@@ -21,14 +26,14 @@ class PriceSubmission(models.Model):
     brunch_lunch = models.BooleanField(default=False)
     wheelchair_access = models.BooleanField(default=False)
 
-    # Ratings
+    # Ratings for the p;rice submission form - these are integers so they can be used in the frontend as stars
     coffee_taste = models.IntegerField(default=0)
     coffee_options = models.IntegerField(default=0)
     service = models.IntegerField(default=0)
     atmosphere = models.IntegerField(default=0)
     value_for_money = models.IntegerField(default=0)
 
-    # File Upload
+    # File Upload model - receipt
     receipt = models.FileField(upload_to="receipts/", blank=True, null=True)
 
     def __str__(self):

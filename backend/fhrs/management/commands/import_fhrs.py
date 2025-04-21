@@ -1,13 +1,20 @@
-# This is the library that we will use to make HTTP requests to the API
+# ------------------------------------------------------------------
+# This script is used to import food hygiene ratings from the Food Hygiene Rating Scheme (FHRS) API
+# This is the library that wewill use to make the HTTP requests to the API
+# ------------------------------------------------------------------
+
 import xml.etree.ElementTree as ET  # This is the XML parser that we will use to parse the data from the API
 
 import requests
-from django.core.management.base import \
-    BaseCommand  # Import the BaseCommand class from Django
-from fhrs.models import \
-    Business  # Import the Business model that we created earlier
+from django.core.management.base import (
+    BaseCommand,
+)  # Imports the BaseCommand class from Django
+from fhrs.models import Business  # Imports the Business model from the fhrs app
 
 
+# This is the command class that will be used to import the data
+# It inherits from BaseCommand, which is a Django class that allows us to create custom management commands
+# The help attribute is a short description of what the command does
 class Command(BaseCommand):
     help = "Import food hygiene ratings from FHRS API"
 
@@ -15,13 +22,13 @@ class Command(BaseCommand):
         url = "https://ratings.food.gov.uk/api/open-data-files/FHRS807en-GB.xml"
         response = requests.get(url)
 
-        if response.status_code != 200:
+        if response.status_code != 200:  # Check if the request was successful
             self.stderr.write("Failed to fetch data")
             return
 
         root = ET.fromstring(response.content)
 
-        # Iterate over each business
+        # Iterates over each business stored in the XML data and then extracts the relevant info
         for establishment in root.findall(".//EstablishmentDetail"):
             name = establishment.find("BusinessName").text
             business_type = establishment.find("BusinessType").text
@@ -48,7 +55,7 @@ class Command(BaseCommand):
                 else None
             )
 
-            # Filter only coffee shops or cafés
+            # Filter only coffee shops or cafés - to redduce returned records
             if "cafe" in business_type.lower() or "coffee" in business_type.lower():
                 obj, created = Business.objects.update_or_create(
                     fhrs_id=fhrs_id,
