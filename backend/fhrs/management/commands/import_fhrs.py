@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------
 # This script is used to import food hygiene ratings from the Food Hygiene Rating Scheme (FHRS) API
 # This is the library that wewill use to make the HTTP requests to the API
+#ref https://ratings.food.gov.uk/open-data-resources/documents/FHRS_APIv1_guidance_april24.pdf
 # ------------------------------------------------------------------
 
 import xml.etree.ElementTree as ET  # This is the XML parser that we will use to parse the data from the API

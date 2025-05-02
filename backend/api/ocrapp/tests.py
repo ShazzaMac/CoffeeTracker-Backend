@@ -2,6 +2,8 @@
 # These tests are for the OCR app, which handles image processing and text extraction.
 # This test now passes successfully --- as of 25/03/25
 # Additional coverage tested - 30/03/25
+# references:https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Testing
+# references: https://docs.djangoproject.com/en/5.2/topics/testing/overview/
 # -------------------------------------------------------
 
 from django.core.files.uploadedfile import SimpleUploadedFile

@@ -1,6 +1,8 @@
 # -----------------------------------------------------------
 # tests to ensure that the coffee shop list view works correctly
 # and that filtering by name, address, and rating works as expected.
+# references: https://docs.djangoproject.com/en/5.2/topics/testing/overview/
+# references:https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Testing
 # #-----------------------------------------------------------
 from django.test import TestCase
 from fhrs.models import Business

@@ -1,5 +1,6 @@
 # --------------------------------------------------------
 # this file contains the views for the Food Hygiene Rating data used in the application
+#ref https://ratings.food.gov.uk/open-data-resources/documents/FHRS_APIv1_guidance_april24.pdf
 # --------------------------------------------------------
 
 from django.db.models import Q

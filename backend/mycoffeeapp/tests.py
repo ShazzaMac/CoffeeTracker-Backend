@@ -1,5 +1,7 @@
 # +-----------------------------------------------------+
 # CoffeeApp Tests
+# references: https://docs.djangoproject.com/en/5.2/topics/testing/overview/
+# references:https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Testing
 # +-----------------------------------------------------+
 
 

@@ -1,2 +1,0 @@
-This file is to explain what this folder is related to
-The accounts folder is for profile accounts 

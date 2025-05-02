@@ -15,7 +15,7 @@ class PriceSubmission(models.Model):
     
     def save(self, *args, **kwargs):
         if self.beverage:
-            self.beverage = self.beverage.strip().title()  # Converts "latte" -> "Latte"
+            self.beverage = self.beverage.strip().title()  # Converts "latte" -> "Latte" reference: https://stackoverflow.com/questions/45121744/how-to-strip-and-use-title-in-list-and-dictionary
         super().save(*args, **kwargs)
 
     # Features as Boolean Fields so they can be used in the frontend as checkboxes
@@ -34,7 +34,7 @@ class PriceSubmission(models.Model):
     value_for_money = models.IntegerField(default=0)
 
     # File Upload model - receipt
-    receipt = models.FileField(upload_to="receipts/", blank=True, null=True)
+    receipt = models.FileField(upload_to="receipts/", blank=True, null=True) #ref:https://www.geeksforgeeks.org/filefield-django-models/
 
     def __str__(self):
         return f"{self.establishment} - {self.beverage} (£{self.price})"

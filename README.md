@@ -49,6 +49,38 @@ my-webapp/
 
 -------------------------------------------------------------------
 
+✨ Project Structure ✨
+
+.
+├── README.md
+├── backend
+│   ├── accounts/               # Handles user profile logic and signals
+│   ├── api/                    # Contains OCR-related logic
+│   ├── fhrs/                   # FHRS API logic for coffee shop data
+│   ├── manage.py               # Django management script
+│   ├── media/                  # Uploaded receipts
+│   ├── mycoffeeapp/            # Core Django app (settings, views, URLs)
+│   ├── priceapp/               # Handles price submissions and features
+│   ├── registration/           # Handles registration, login, and auth
+│   ├── requirements.txt        # Python dependencies
+│   ├── run_tests.py            # Test runner for backend
+│   └── static/                 # Static files (e.g., admin CSS)
+├── frontend
+│   ├── public/                 # HTML template and favicon
+│   ├── src/
+│   │   ├── components/         # React components
+│   │   ├── pages/              # Page-level React views
+│   │   ├── services/           # API service files
+│   │   └── utils/              # Utility functions
+│   ├── jest.config.js          # Jest configuration for testing
+│   ├── package.json            # Node.js dependencies
+│   └── README.md               # Frontend usage instructions
+├── project_structure.md        # This file (auto-generated)
+└── start_project.sh            # Shell script for setup
+
+-------------------------------------------------------------------
+
+
 ✨ Deployment ✨
 
 The app is CI/CD-ready via GitHub Actions and can be deployed using any suitable deployment services or can be developed further.

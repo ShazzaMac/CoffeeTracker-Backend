@@ -1,5 +1,6 @@
 # ------------------------------------------------------------------
 # serilaizers for the registration app
+# ref https://www.youtube.com/watch?v=TmsD8QExZ84
 # ------------------------------------------------------------------
 
 from django.contrib.auth import authenticate, get_user_model

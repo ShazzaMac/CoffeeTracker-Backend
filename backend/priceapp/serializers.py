@@ -1,5 +1,6 @@
 #--------------------------------------------------------------------------------
 # PriceSubmission Serializer 
+# ref https://www.youtube.com/watch?v=TmsD8QExZ84
 #--------------------------------------------------------------------------------
 
 from rest_framework import serializers

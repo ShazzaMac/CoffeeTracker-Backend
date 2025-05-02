@@ -1,5 +1,6 @@
 # ------------------------------------------------------------------
 # This file contains the serializers for the Food Hygiene Rating System (FHRS) app.
+#ref https://ratings.food.gov.uk/open-data-resources/documents/FHRS_APIv1_guidance_april24.pdf
 # ------------------------------------------------------------------
 
 from rest_framework import serializers

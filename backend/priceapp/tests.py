@@ -2,6 +2,8 @@
 # This file contains test cases for the PriceSubmission model and its API endpoints.
 # It uses Django's TestCase and APITestCase classes to create unit tests for the model and API views.
 # It includes tests for creating, retrieving, and validating price submissions.
+# references: https://docs.djangoproject.com/en/5.2/topics/testing/overview/
+# references:https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Testing
 # -----------------------------------------------------------------
 
 from django.test import TestCase

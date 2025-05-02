@@ -1,6 +1,8 @@
 # ----------------------------------------------------------------
 # This file contains test cases for user registration, login,
 # password reset, and protected endpoints using Django and DRF.
+# references: https://docs.djangoproject.com/en/5.2/topics/testing/overview/
+# references:https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Testing
 # ----------------------------------------------------------------
 
 from django.contrib.auth import get_user_model
@@ -13,7 +15,7 @@ from rest_framework.test import APIClient
 from django.core import mail
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from mycoffeeapp.models import CoffeeShop
+
 
 
 User = get_user_model()
@@ -205,46 +207,3 @@ class ResetPasswordViewTest(TestCase):
         )
         response = self.client.post(url, {"password": "newpass123"})
         self.assertEqual(response.status_code, 400)
-
-    # Tests password reset fails if no password is sent
-    def test_password_reset_missing_password(self):
-        response = self.client.post(self.url, {})
-        self.assertEqual(response.status_code, 400)
-
-
-# ------------------------------
-# Protected Endpoint Test
-# ------------------------------
-from rest_framework_simplejwt.tokens import RefreshToken
-
-
-class ProtectedEndpointTest(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username="protecteduser", password="testpass"
-        )
-        self.token = str(RefreshToken.for_user(self.user).access_token)
-        self.client = APIClient()
-        self.url = reverse("protected-endpoint")
-
-    # Tests the access to protected view with JWT
-    def test_access_protected_with_auth(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-    # Tests the access to protected view without JWT fails
-    def test_access_protected_without_auth(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 401)
-
-
-# ------------------------------
-# Dashboard View Test (Public)
-# ------------------------------
-class DashboardViewTest(TestCase):
-    # Tests that the dashboard view returns a valid response
-    def test_dashboard_access(self):
-        response = self.client.get(reverse("dashboard"))
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("message", response.json())

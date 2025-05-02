@@ -1,7 +1,8 @@
 # ------------------------------------------------------------------
 # Django model for storing business information from the Food Hygiene Rating Scheme (FHRS)
 # This data can then be used in the application to display information about locations and ratings
-# ------------------------------------------------------------------
+##ref https://ratings.food.gov.uk/open-data-resources/documents/FHRS_APIv1_guidance_april24.pdf
+#  ------------------------------------------------------------------
 
 from django.db import models
 

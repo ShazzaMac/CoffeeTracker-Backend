@@ -7,6 +7,9 @@
 # converting HEIC images to JPG, extracting text from images and PDFs using Tesseract and EasyOCR,
 # preprocessing images for better OCR results, and generating structured JSON data using Gemini AI.
 # It also includes error handling and logging for debugging purposes.
+ #resources: https://github.com/theiguim/gen_menu_ai, https://www.freecodecamp.org/news/getting-started-with-tesseract-part-ii-f7f9a0899b3f/
+# https://stackoverflow.com/questions/32642421/opencv-altering-the-filter2d-function?rq=3
+#https://www.freecodecamp.org/news/getting-started-with-tesseract-part-ii-f7f9a0899b3f/
 # ----------------------------------------------------------------
 
 import pytesseract
@@ -41,7 +44,7 @@ def convert_heic_to_jpg(img_path):
     new_path = img_path.rsplit(".", 1)[0] + ".jpg"
     try:
         subprocess.run(
-            ["sips", "-s", "format", "jpeg", img_path, "--out", new_path], check=True
+            ["sips", "-s", "format", "jpeg", img_path, "--out", new_path], check=True 
         )
         return new_path
     except Exception as e:
@@ -63,7 +66,7 @@ def preprocess_image(image_path):
 
     # Lightly sharpens instead of thresholding - this has been manually adjusted to test results
     kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-    processed = cv2.filter2D(image, -1, kernel)
+    processed = cv2.filter2D(image, -1, kernel) # code from - https://stackoverflow.com/questions/32642421/opencv-altering-the-filter2d-function?rq=3
 
     # Save processed image
     temp_path = image_path.rsplit(".", 1)[0] + "_preprocessed.png"
@@ -78,7 +81,7 @@ def preprocess_image(image_path):
 
 
 # Extracts text from images and PDFs
-def extract_text(file_path, use_easyocr=False):
+def extract_text(file_path, use_easyocr=False):#change to true if you want to use easyocr
     try:
 
         if file_path.lower().endswith(".pdf"):
@@ -91,7 +94,7 @@ def extract_text(file_path, use_easyocr=False):
 
         processed_image_path = preprocess_image(file_path)
 
-        # Performs OCR with EasyOCR or Tesseract (added both incase one fails)
+        # Performs OCR with EasyOCR or Tesseract (added both incase one fails but currently only Tesseract is used)
         if use_easyocr:
             extracted_text = easyocr_extract_text(processed_image_path)
         else:
@@ -119,15 +122,17 @@ def generate_json_ai(text):
                 "error": "OCR output is too poor to process. Please try another image."
             }
 
-        api_key = os.getenv("TOKEN_API_GEMINI")
+        api_key = os.getenv("TOKEN_API_GEMINI")# Gemini API Key is stored in .env file
         if not api_key:
             raise ValueError("API Key is missing. Set TOKEN_API_GEMINI in .env")
 
-        genai.configure(api_key=api_key)
+        genai.configure(api_key=api_key) # configures the API key for Gemini AI
+        #  Initializes the Gemini AI model
         model = genai.GenerativeModel("gemini-1.5-flash")
 
         #  Prompt for Gemini AI to convert text into structured JSON
         #  This is a basic prompt and can be improved with more specific instructions
+        # prompt guidance can be found here: https://ai.google.dev/gemini-api/docs/structured-output?lang=python
         prompt = (
             "Analyze the extracted receipt text and convert it into structured JSON.\n"
             "Provide valid JSON output containing:\n"
@@ -138,7 +143,7 @@ def generate_json_ai(text):
             f"Extracted text:\n{text}"
         )
 
-        response = model.generate_content(prompt)
+        response = model.generate_content(prompt)# Generates content using the model based on the prompt
 
         #  Ensures AI response is not empty
         if not response.text.strip():
@@ -146,7 +151,9 @@ def generate_json_ai(text):
 
         # Ensures AI response is valid JSON
         try:
-            clean_response = re.sub(r"```json|```", "", response.text).strip()
+            clean_response = re.sub(r"```json|```", "", response.text).strip() #re.sub() removes the code block formatting
+            #  This regex pattern removes any unwanted characters
+            #  and ensures the JSON is properly formatted
             structured_data = json.loads(clean_response)
             return structured_data  # Return valid JSON
         except json.JSONDecodeError as e:
