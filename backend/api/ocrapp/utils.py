@@ -7,9 +7,10 @@
 # converting HEIC images to JPG, extracting text from images and PDFs using Tesseract and EasyOCR,
 # preprocessing images for better OCR results, and generating structured JSON data using Gemini AI.
 # It also includes error handling and logging for debugging purposes.
- #resources: https://github.com/theiguim/gen_menu_ai, https://www.freecodecamp.org/news/getting-started-with-tesseract-part-ii-f7f9a0899b3f/
-# https://stackoverflow.com/questions/32642421/opencv-altering-the-filter2d-function?rq=3
-#https://www.freecodecamp.org/news/getting-started-with-tesseract-part-ii-f7f9a0899b3f/
+ #resources: https://github.com/theiguim/gen_menu_ai, https://www.freecodecamp.org/news/getting-started-with-tesseract-part-ii-f7f9a0899b3f/, https://www.geeksforgeeks.org/python-grayscaling-of-images-using-opencv/ 
+# https://stackoverflow.com/questions/32642421/opencv-altering-the-filter2d-function?rq=3, https://www.geeksforgeeks.org/python-opencv-filter2d-function
+#https://www.freecodecamp.org/news/getting-started-with-tesseract-part-ii-f7f9a0899b3f/,https://www.geeksforgeeks.org/python-opencv-cv2-imwrite-method/
+
 # ----------------------------------------------------------------
 
 import pytesseract
